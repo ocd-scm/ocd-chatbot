@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if [ -z ${PASSPHRASE+x} -z "$" ]; then
+if [ -z ${PASSPHRASE+x} ]; then
     >&2 echo "ERROR no PASSPHRASE"
     sleep 1
     exit 1
@@ -29,7 +29,7 @@ set +x
 # gpg decrypt all the *secret files
 find ${OCD_CHECKOUT_PATH} -type f -name '*secret' | while read -r SECRET ; do 
     if [ ! -f "${SECRET%.*}" ]; then
-        echo $PASSPHRASE | gpg --pinentry loopback --passphrase-fd 0 --output "${SECRET%.*}" --decrypt "${SECRET%.*}.secret"
+        echo $PASSPHRASE | gpg --passphrase-fd 0 --output "${SECRET%.*}" --decrypt "${SECRET%.*}.secret"
         if [ ! -f "${SECRET%.*}" ]; then
             >&2 echo "PANIC! Could not decrypt ${SECRET%.*}.secret. Check 'git secret whoknows' against 'gpg --list-secret-keys'"
             sleep 1
