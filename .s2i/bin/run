@@ -1,7 +1,6 @@
 #!/bin/sh
 
-
-if [ ! -z "$PASSPHRASE" ]; then
+if [ -z ${PASSPHRASE+x} -z "$" ]; then
     >&2 echo "ERROR no PASSPHRASE"
     sleep 1
     exit 1
@@ -9,15 +8,15 @@ fi
 
 GPG_PRIVATE_KEY=$(find . -type f -name \*.prv.key)
 
-if [ "$?" -ne "0" ]; then
+if [[ "$?" -ne "0" ]]; then
     >&2 echo "ERROR could not find \*.prv.key"
     sleep 1
     exit 2
 fi
 
-echo $PASSPHRASE | gpg --pinentry loopback --import --passphrase-fd 0 $GPG_PRIVATE_KEY
+echo $PASSPHRASE | gpg --import --passphrase-fd 0 $GPG_PRIVATE_KEY
 
-if [ "$?" -ne "0" ]; then
+if [[ "$?" -ne "0" ]]; then
     >&2 echo "ERROR could not decrypt and import $GPG_PRIVATE_KEY"
     sleep 1
     exit 3
