@@ -4,7 +4,7 @@
   "description": "A starter kit for building a custom Slack bot with Botkit",
   "main": "bot.js",
   "scripts": {
-    "start": "PORT=8080 node bot.js"
+    "start": "node bot.js"
   },
   "dependencies": {
     "body-parser": "^1.15.2",

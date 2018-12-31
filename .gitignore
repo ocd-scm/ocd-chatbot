@@ -5,3 +5,4 @@ components/routes/_*
 .sass-cache/*
 .gitsecret/keys/random_seed
 .env
+passphrase
