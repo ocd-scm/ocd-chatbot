@@ -2,6 +2,6 @@
 
 cd /tmp && wget -q -O - https://github.com/github/hub/releases/download/v2.4.0/hub-linux-amd64-2.4.0.tgz | \
     tar zxf - && \
-    mv $(find . -name hub) /usr/local/bin
+    mv $(find . -name hub) /opt/app-root/src
 
-exec $STI_SCRIPTS_PATH/run
+exec $STI_SCRIPTS_PATH/assemble
