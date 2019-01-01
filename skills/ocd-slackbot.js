@@ -68,19 +68,22 @@ module.exports = function(controller) {
             console.log(`APP=${APP}, SHA=${SHA}, OCD_RELEASE=${OCD_RELEASE}`);
             bot.reply(message, `creating a release of ${APP} from ${SHA}...`);
             child.on('exit', function (code, signal) {
-                var msg =  'child process exited with ' +
-                            `code ${code} and signal ${signal}`;
-                console.log(msg);
-                bot.reply(message, msg);
+                if( `${code}` !== "0" ) {
+                    var msg =  'child process exited with ' +
+                                `code ${code} and signal ${signal}`;
+                    console.log(msg);
+                    bot.reply(message, msg);
+                }
             });
 
             child.stdout.on('data', (data) => {
-                console.log(`child stdout:\n${data}`);
-
+                console.log(data);
+                bot.reply(message, data);
             });
 
             child.stderr.on('data', (data) => {
-                console.error(`child stderr:\n${data}`);
+                console.log(data);
+                bot.reply(message, data);
             });
 
             
