@@ -1,6 +1,7 @@
 const { spawn } = require('child_process');
 
 const HOME = "/opt/app-root/src";
+const OCD_RELEASE = HOME+'/bin/ocd-release.sh';
 
 module.exports = function(controller) {
 
@@ -61,10 +62,10 @@ module.exports = function(controller) {
 
     controller.hears(['^create a release of (.*) from commit (.*)','^create a release'], 'direct_message,direct_mention', function(bot, message) {
         if (message.match[1]) {
-            var APP = message.match[1];
-            var SHA = message.match[2];
-            console.log("APP="+APP+", SHA="+SHA);
-            const child = spawn(HOME+'/bin/ocd-release.sh ');
+            const APP = message.match[1];
+            const SHA = message.match[2];
+            const child = spawn(OCD_RELEASE);
+            console.log("APP="+APP+", SHA="+SHA+", OCD_RELEASE="+OCD_RELEASE);
             child.on('exit', function (code, signal) {
                 var msg =  'child process exited with ' +
                             `code ${code} and signal ${signal}`;
