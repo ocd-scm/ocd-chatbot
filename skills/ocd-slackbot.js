@@ -1,15 +1,6 @@
-/*
+const { spawn } = require('child_process');
 
-WHAT IS THIS?
-
-This module demonstrates simple uses of Botkit's `hears` handler functions.
-
-In these examples, Botkit is configured to listen for certain phrases, and then
-respond immediately with a single line response.
-
-*/
-
-var wordfilter = require('wordfilter');
+const HOME = "/opt/app-root/src";
 
 module.exports = function(controller) {
 
@@ -43,20 +34,6 @@ module.exports = function(controller) {
 
     });
 
-    controller.hears(['^say (.*)','^say'], 'direct_message,direct_mention', function(bot, message) {
-        if (message.match[1]) {
-
-            if (!wordfilter.blacklisted(message.match[1])) {
-                bot.reply(message, message.match[1]);
-            } else {
-                bot.reply(message, '_sigh_');
-            }
-        } else {
-            bot.reply(message, 'I will repeat whatever you say.')
-        }
-    });
-
-
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -81,5 +58,23 @@ module.exports = function(controller) {
         uptime = parseInt(uptime) + ' ' + unit;
         return uptime;
     }
+
+    controller.hears(['^create a release of (.*) from commit (.*)','^create a release'], 'direct_message,direct_mention', function(bot, message) {
+        if (message.match[1]) {
+            var APP = message.match[1];
+            var SHA = message.match[2];
+            console.log("APP="+APP+", SHA="+SHA);
+            const child = spawn(HOME+'/bin/ocd-release.sh ');
+            child.on('exit', function (code, signal) {
+                var msg =  'child process exited with ' +
+                            `code ${code} and signal ${signal}`;
+                console.log(msg);
+                bot.reply(message, msg);
+            });
+            bot.reply(message, 'working on a release...');
+        } else {
+            bot.reply(message, 'Tell me to "create a release of $APP from commit $SHA"')
+        }
+    });
 
 };
