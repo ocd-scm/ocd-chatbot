@@ -77,13 +77,13 @@ module.exports = function(controller) {
             });
 
             child.stdout.on('data', (data) => {
-                console.log(data);
-                bot.reply(message, data);
+                console.log(`${data}`);
+                bot.reply(message, `${data}`);
             });
 
             child.stderr.on('data', (data) => {
-                console.log(data);
-                bot.reply(message, data);
+                console.log(`${data}`);
+                bot.reply(message, `${data}`);
             });
 
             
