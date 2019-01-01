@@ -64,15 +64,26 @@ module.exports = function(controller) {
         if (message.match[1]) {
             const APP = message.match[1];
             const SHA = message.match[2];
-            const child = spawn(OCD_RELEASE);
-            console.log("APP="+APP+", SHA="+SHA+", OCD_RELEASE="+OCD_RELEASE);
+            const child = spawn(OCD_RELEASE, [APP, SHA]);
+            console.log(`APP=${APP}, SHA=${SHA}, OCD_RELEASE=${OCD_RELEASE}`);
+            bot.reply(message, `creating a release of ${APP} from ${SHA}...`);
             child.on('exit', function (code, signal) {
                 var msg =  'child process exited with ' +
                             `code ${code} and signal ${signal}`;
                 console.log(msg);
                 bot.reply(message, msg);
             });
-            bot.reply(message, 'working on a release...');
+
+            child.stdout.on('data', (data) => {
+                console.log(`child stdout:\n${data}`);
+
+            });
+
+            child.stderr.on('data', (data) => {
+                console.error(`child stderr:\n${data}`);
+            });
+
+            
         } else {
             bot.reply(message, 'Tell me to "create a release of $APP from commit $SHA"')
         }
