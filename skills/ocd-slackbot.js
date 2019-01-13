@@ -60,7 +60,10 @@ module.exports = function(controller) {
         return uptime;
     }
 
-    controller.hears(['^create a release of (.*) from commit (.*)','^create a release'], 'direct_message,direct_mention', function(bot, message) {
+    controller.hears([
+            '^create a release of (.*) from commit (.*)',
+            '^create a release'], 
+            'direct_message,direct_mention', function(bot, message) {
         if (message.match[1]) {
             const APP = message.match[1];
             const SHA = message.match[2];

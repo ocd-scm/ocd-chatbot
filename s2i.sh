@@ -1,4 +1,5 @@
 #!/bin/bash
+
 s2i --copy \
     --incremental=true \
     build \
@@ -6,5 +7,8 @@ s2i --copy \
     --ref=master \
     registry.access.redhat.com/rhscl/nodejs-8-rhel7:latest \
     ocd-openshiftbot
+
+
+#s2i s2i build     .     registry.access.redhat.com/rhscl/nodejs-8-rhel7:latest     ocd-openshiftbot
 
 docker run -it -p 8080:8080 -e PASSPHRASE=$(<passphrase)  ocd-openshiftbot
