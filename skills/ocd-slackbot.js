@@ -66,7 +66,7 @@ module.exports = function(controller) {
             const SHA = message.match[2];
             const child = spawn(OCD_RELEASE, [APP, SHA]);
             console.log(`APP=${APP}, SHA=${SHA}, OCD_RELEASE=${OCD_RELEASE}`);
-            bot.reply(message, `creating a release of ${APP} from ${SHA}...`);
+            bot.reply(message, 'Working on it...');
             child.on('exit', function (code, signal) {
                 if( `${code}` !== "0" ) {
                     var msg =  'child process exited with ' +
