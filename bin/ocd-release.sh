@@ -6,4 +6,4 @@ DATE=$(date +"%Y-%m-%d_%H-%M-%S")
 
 echo "$1 $2 $DATE "
 
-$APP_ROOT/hub --help
+#$APP_ROOT/hub --help
