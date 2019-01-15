@@ -1,25 +1,12 @@
 #!/bin/bash
+set +x
 
 APP=$1
-SHA=$2
 
 if [[ -z "$APP" ]]; then
   >&2 echo "ERROR please define APP"
   exit 1
 fi
-
-if [[ -z "$SHA" ]]; then
-  >&2 echo "ERROR please define SHA"
-  exit 2
-fi
-
-TAG=$3
-
-if [[ -z "$TAG" ]]; then
-  TAG=$(date +"%Y-%m-%d_%H-%M-%S")
-fi
-
-echo "$0 $APP $SHA $TAG"
 
 # https://unix.stackexchange.com/a/251896/72040
 if [[ -z "${!APP}" ]]; then
@@ -54,11 +41,36 @@ cd $APP
 
 git pull -X theirs
 
+FILE=ocd-slackbot/envvars
+
+if [[ -z "$FILE" ]]; then
+  >&2 echo "ERROR please define FILE"
+  exit 2
+fi
+
+echo "FILE=$FILE"
+
+REGEX="s/OCD_TAG=.*/OCD_TAG=$OCD_TAG/1"
+
+if [[ -z "$REGEX" ]]; then
+  >&2 echo "ERROR please define REGEX"
+  exit 3
+fi
+
+echo "REGEX=$REGEX"
+
+OCD_TAG=$4
+
+if [[ -z "$OCD_TAG" ]]; then
+  >&2 echo "ERROR please define OCD_TAG"
+  exit 4
+fi
+
+echo "OCD_TAG=$OCD_TAG"
+
+echo "$0 $APP $FILE $REGEX $OCD_TAG"
+
 hub() { 
     $APP_ROOT/hub "$@" 
 }
 
-set +x
-
-echo hub release create -m "ocd-slackbot release" -t $SHA $TAG
-hub release create -m "ocd-slackbot release" -t $SHA $TAG
