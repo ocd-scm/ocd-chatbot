@@ -48,31 +48,29 @@ if [[ -z "$FILE" ]]; then
   exit 2
 fi
 
+echo "FILE=$FILE"
+
 REGEX="s/OCD_TAG=.*/OCD_TAG=$OCD_TAG/1"
 
-if [[ -z "$PATH" ]]; then
-  >&2 echo "ERROR please define PATH"
+if [[ -z "$REGEX" ]]; then
+  >&2 echo "ERROR please define REGEX"
   exit 3
 fi
 
-VALUE=$4
+echo "REGEX=$REGEX"
 
-if [[ -z "$VALUE" ]]; then
-  >&2 echo "ERROR please define VALUE"
+OCD_TAG=$4
+
+if [[ -z "$OCD_TAG" ]]; then
+  >&2 echo "ERROR please define OCD_TAG"
   exit 4
 fi
 
-echo "$0 $APP $FILE $PATH $VALUE"
+echo "OCD_TAG=$OCD_TAG"
+
+echo "$0 $APP $FILE $REGEX $OCD_TAG"
 
 hub() { 
     $APP_ROOT/hub "$@" 
 }
 
-#http://mikefarah.github.io/yq/write/#updating-files-in-place
-#yq w -i sample.yaml b.c cat
-#yq w -i $FILE $PATH $VALUE
-
-sed -i .bak "s/OCD_TAG=.*/OCD_TAG=$OCD_TAG/1" ocd-slackbot/envvars
-
-echo hub release create -m "ocd-slackbot release" -t $SHA $TAG
-#hub release create -m "ocd-slackbot release" -t $SHA $TAG
