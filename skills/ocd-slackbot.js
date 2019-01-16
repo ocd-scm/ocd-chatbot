@@ -1,7 +1,7 @@
 const { spawn } = require('child_process');
 
 const HOME = "/opt/app-root/src";
-const OCD_RELEASE = HOME+'/bin/ocd-release.sh';
+const OCD_RELEASE = HOME+'/bin/ocd-create-release.sh';
 
 module.exports = function(controller) {
 
@@ -61,13 +61,19 @@ module.exports = function(controller) {
     }
 
     controller.hears([
+            '^create a release of (.*) from commit (.*) with tag (.*)',
             '^create a release of (.*) from commit (.*)',
             '^create a release'], 
             'direct_message,direct_mention', function(bot, message) {
         if (message.match[1]) {
             const APP = message.match[1];
             const SHA = message.match[2];
-            const child = spawn(OCD_RELEASE, [APP, SHA]);
+            var argsArray = [APP, SHA];
+            if( message.match[3] ) {
+                const TAG = message.match[3];
+                args.push(TAG);
+            }
+            const child = spawn(OCD_RELEASE, argsArray);
             console.log(`APP=${APP}, SHA=${SHA}, OCD_RELEASE=${OCD_RELEASE}`);
             bot.reply(message, 'Working on it...');
             child.on('exit', function (code, signal) {
@@ -91,7 +97,7 @@ module.exports = function(controller) {
 
             
         } else {
-            bot.reply(message, 'Tell me to "create a release of $APP from commit $SHA"')
+            bot.reply(message, 'Tell me to "create a release of $APP from commit $SHA" or "create a release of $APP from commit $SHA" with tag $TAG')
         }
     });
 
