@@ -71,7 +71,7 @@ module.exports = function(controller) {
             var argsArray = [APP, SHA];
             if( message.match[3] ) {
                 const TAG = message.match[3];
-                args.push(TAG);
+                argsArray.push(TAG);
             }
             const child = spawn(OCD_RELEASE, argsArray);
             console.log(`APP=${APP}, SHA=${SHA}, OCD_RELEASE=${OCD_RELEASE}`);
