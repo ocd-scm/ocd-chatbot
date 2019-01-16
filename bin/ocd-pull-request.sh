@@ -14,6 +14,31 @@ if [[ -z "${!APP}" ]]; then
   exit 3
 fi
 
+SHA=$2
+
+if [[ -z "$SHA" ]]; then
+  >&2 echo "ERROR please define SHA"
+  exit 1
+fi
+
+TAG=$3
+
+if [[ -z "$TAG" ]]; then
+  TAG=$(printf "v%s" $(date +"%Y_%m_%d_%H_%M_%S") )
+  echo "creating tag $TAG"
+fi
+
+if [ -z "$GITHUB_USER" ]; then
+  echo "Please define GITHUB_USER so that we can push a release to github"
+  exit 2
+fi
+
+# https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/
+if [ -z "$GITHUB_OAUTH_TOKEN" ]; then
+  echo "Please define GITHUB_OAUTH_TOKEN so that we can push a release to github"
+  exit 3
+fi
+
 # we assume we have an env var $APP defined as key with value of git url
 ENV_GIT_URL=$(printf "%s" "${!APP}" )
 
@@ -41,36 +66,20 @@ cd $APP
 
 git pull -X theirs
 
-FILE=ocd-slackbot/envvars
-
-if [[ -z "$FILE" ]]; then
-  >&2 echo "ERROR please define FILE"
-  exit 2
-fi
-
-echo "FILE=$FILE"
-
-REGEX="s/OCD_TAG=.*/OCD_TAG=$OCD_TAG/1"
-
-if [[ -z "$REGEX" ]]; then
-  >&2 echo "ERROR please define REGEX"
-  exit 3
-fi
-
-echo "REGEX=$REGEX"
-
-OCD_TAG=$4
-
-if [[ -z "$OCD_TAG" ]]; then
-  >&2 echo "ERROR please define OCD_TAG"
-  exit 4
-fi
-
-echo "OCD_TAG=$OCD_TAG"
-
-echo "$0 $APP $FILE $REGEX $OCD_TAG"
-
 hub() { 
     $APP_ROOT/hub "$@" 
 }
 
+if [[ ! -f ~/.config/hub ]]; then
+  mkdir -p ~/.config
+# https://github.com/github/hub/issues/978#issuecomment-131964409
+cat >~/.config/hub <<EOL
+---
+github.com:
+- protocol: https
+  user: ${GITHUB_USER}
+  oauth_token: ${GITHUB_OAUTH_TOKEN}
+EOL
+fi
+
+hub release create -m "ocd-slackbot release $TAG" $TAG
