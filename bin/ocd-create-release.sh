@@ -82,4 +82,4 @@ github.com:
 EOL
 fi
 
-hub release create -m "ocd-slackbot release $TAG" $TAG
+hub release create -m "ocd-slackbot release $TAG" -t $SHA $TAG
