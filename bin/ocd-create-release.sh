@@ -42,8 +42,6 @@ fi
 # we assume we have an env var $APP defined as key with value of git url
 ENV_GIT_URL=$(printf "%s" "${!APP}" )
 
-echo "ENV_GIT_URL=${ENV_GIT_URL}"
-
 # we are running in a random assigned uid with no matching /etc/password
 # so we sythesis an entry as per https://docs.openshift.com/enterprise/3.1/creating_images/guidelines.html#openshift-enterprise-specific-guidelines
 export USER_ID=$(id -u)
