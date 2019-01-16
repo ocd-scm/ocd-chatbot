@@ -57,12 +57,12 @@ cd $APP_ROOT
 
 # checkout the code
 if [ ! -d $APP ]; then
-  git clone --depth 1 --single-branch $ENV_GIT_URL $APP
+  git clone --depth 1 --single-branch $ENV_GIT_URL $APP 1>/dev/null
 fi
 
 cd $APP
 
-git pull -X theirs
+git pull -X theirs 1>/dev/null
 
 hub() { 
     $APP_ROOT/hub "$@" 
