@@ -114,24 +114,30 @@ module.exports = function(controller) {
             var argsArray = [APP, TAG, ENVIRONMENT];
             const child = spawn(OCD_DEPLOY, argsArray);
             console.log(`APP=${APP}, TAG=${TAG}, ENVIRONMENT=${ENVIRONMENT}`);
-            bot.reply(message, 'Working on it...');
+            
+            bot.api.reactions.add({
+                timestamp: message.ts,
+                channel: message.channel,
+                name: '👍',
+            });
+
             child.on('exit', function (code, signal) {
                 if( `${code}` !== "0" ) {
                     var msg =  'child process exited with ' +
                                 `code ${code} and signal ${signal}`;
                     console.log(msg);
-                    bot.reply(message, msg);
+                    bot.replyInThread(message, msg);
                 }
             });
 
             child.stdout.on('data', (data) => {
                 console.log(`${data}`);
-                bot.reply(message, `${data}`);
+                bot.replyInThread(message, `${data}`);
             });
 
             child.stderr.on('data', (data) => {
                 console.log(`${data}`);
-                bot.reply(message, `${data}`);
+                bot.replyInThread(message, `stderr: ${data}`);
             });
 
             
