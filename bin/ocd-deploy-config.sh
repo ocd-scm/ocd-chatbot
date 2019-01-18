@@ -1,5 +1,5 @@
 #!/bin/bash
-set +x
+set -Eeuxo pipefail
 
 APP=$1
 
@@ -42,7 +42,7 @@ fi
 # we assume we have an env var $APP defined as key with value of git url
 ENV_GIT_URL=$(printf "%s" "${!APP}" )
 
-echo "ENV_GIT_URL=${ENV_GIT_URL}"
+#echo "ENV_GIT_URL=${ENV_GIT_URL}"
 
 # we are running in a random assigned uid with no matching /etc/password
 # so we sythesis an entry as per https://docs.openshift.com/enterprise/3.1/creating_images/guidelines.html#openshift-enterprise-specific-guidelines
@@ -59,12 +59,27 @@ cd $APP_ROOT
 
 # checkout the code
 if [ ! -d $APP ]; then
-  git clone --depth 1 --single-branch $ENV_GIT_URL $APP
+  git clone $ENV_GIT_URL $APP 1>/dev/null
 fi
 
 cd $APP
 
-git pull -X theirs
+git checkout master 
+
+git pull -X theirs 1>/dev/null
+
+date > version.txt
+
+git checkout -b $TAG
+
+git commit -am "ocd-slackbot deploy $TAG"
+
+if [[ "$?" == "128" ]]; then
+  git config --global user.email "ocd-slackbot@example.com"
+  git config --global user.name "OCD SlackBot"
+  git config --global push.default matching
+  git commit -am "ocd-slackbot release $TAG"
+fi
 
 hub() { 
     $APP_ROOT/hub "$@" 
@@ -82,4 +97,5 @@ github.com:
 EOL
 fi
 
-hub release create -m "ocd-slackbot release $TAG" $TAG
+#hub release create -m "ocd-slackbot release $TAG" $TAG
+hub pull-request -m "ocd-slackbot deploy $TAG"
