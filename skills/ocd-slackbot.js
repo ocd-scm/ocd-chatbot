@@ -62,8 +62,8 @@ module.exports = function(controller) {
     }
 
     controller.hears([
-            '^create a release of (.*) from commit (.*) with tag (.*)',
-            '^create a release of (.*) from commit (.*)',
+            '^create a release of (.*) from (.*) with tag (.*)',
+            '^create a release of (.*) from (.*)',
             '^create a release'], 
             'direct_message,direct_mention', function(bot, message) {
         if (message.match[1]) {
@@ -98,7 +98,7 @@ module.exports = function(controller) {
 
             
         } else {
-            bot.reply(message, 'Tell me to "create a release of $APP from commit $SHA" or "create a release of $APP from commit $SHA" with tag $TAG')
+            bot.reply(message, 'Tell me to `create a release of $APP from $COMMITISH` or `create a release of $APP from $COMMITISH with tag $TAG` where $COMMITISH can be a commit sha, or bramch.')
         }
     });
 
