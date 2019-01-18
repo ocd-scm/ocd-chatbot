@@ -136,7 +136,7 @@ module.exports = function(controller) {
 
             
         } else {
-            bot.reply(message, 'Tell me to "create a release of $APP from commit $SHA" or "create a release of $APP from commit $SHA" with tag $TAG')
+            bot.reply(message, 'Tell me to `deploy $APP version $TAG to $ENV`')
         }
     });
 
