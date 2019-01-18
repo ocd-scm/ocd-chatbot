@@ -69,9 +69,9 @@ fi
 
 cd $KEY
 
-git checkout master 
+git checkout master 2>/dev/null
 
-git pull -X theirs
+git pull -X theirs 1>/dev/null
 
 MESSAGE="ocd-slackbot deploy $TAG"
 
@@ -87,14 +87,17 @@ if [[ "$?" != "0" ]]; then
   exit 8  
 fi
 
-git checkout -b "$TAG" && git commit -am "$MESSAGE" && git push origin "$TAG"
+git checkout -b "$TAG"
+git commit -am "$MESSAGE"
 
 if [[ "$?" == "128" ]]; then
   git config --global user.email "ocd-slackbot@example.com"
   git config --global user.name "OCD SlackBot"
   git config --global push.default matching
-  git commit -am "ocd-slackbot release $TAG"
+  git commit -am "$MESSAGE"
 fi
+
+git push origin "$TAG"
 
 hub() { 
     $APP_ROOT/hub "$@" 
