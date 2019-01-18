@@ -87,7 +87,7 @@ if [[ "$?" != "0" ]]; then
   exit 8  
 fi
 
-git checkout -b $TAG && git commit -am $MESSAGE && git push origin $TAG
+git checkout -b "$TAG" && git commit -am "$MESSAGE" && git push origin "$TAG"
 
 if [[ "$?" == "128" ]]; then
   git config --global user.email "ocd-slackbot@example.com"
