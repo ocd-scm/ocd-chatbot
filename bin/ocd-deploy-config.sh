@@ -1,5 +1,4 @@
 #!/bin/bash
-set -Eeuxo pipefail
 
 APP=$1
 
@@ -14,18 +13,18 @@ if [[ -z "${!APP}" ]]; then
   exit 2
 fi
 
-SHA=$2
-
-if [[ -z "$SHA" ]]; then
-  >&2 echo "ERROR please define SHA"
-  exit 3
-fi
-
-TAG=$3
+TAG=$2
 
 if [[ -z "$TAG" ]]; then
   TAG=$(printf "v%s" $(date +"%Y_%m_%d_%H_%M_%S") )
   echo "creating tag $TAG"
+fi
+
+ENVIRONMENT=$3
+
+if [[ -z "$ENVIRONMENT" ]]; then
+  >&2 echo "ERROR please define ENVIRONMENT"
+  exit 1
 fi
 
 if [ -z "$GITHUB_USER" ]; then
@@ -35,14 +34,20 @@ fi
 
 # https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/
 if [ -z "$GITHUB_OAUTH_TOKEN" ]; then
-  echo "Please define GITHUB_OAUTH_TOKEN so that we can push a release to github"
+  echo "Please define GITHUB_OAUTH_TOKEN so that we can make a pull request"
   exit 5
 fi
 
-# we assume we have an env var $APP defined as key with value of git url
-ENV_GIT_URL=$(printf "%s" "${!APP}" )
+# we lookup the git url by "$app_$env"
+KEY=$(printf "%s_%s" "$APP" "$ENVIRONMENT")
 
-#echo "ENV_GIT_URL=${ENV_GIT_URL}"
+# this prints the value assocaited with the env var $KEY
+ENV_GIT_URL=$(printf "%s" "${!KEY}" )
+
+if [ -z "$ENV_GIT_URL" ]; then
+  >&2 echo "ERROR could not resolve ENV_GIT_URL for key $KEY" 
+  exit 6
+fi
 
 # we are running in a random assigned uid with no matching /etc/password
 # so we sythesis an entry as per https://docs.openshift.com/enterprise/3.1/creating_images/guidelines.html#openshift-enterprise-specific-guidelines
@@ -57,22 +62,32 @@ export NSS_WRAPPER_GROUP=/etc/group
 
 cd $APP_ROOT
 
-# checkout the code
-if [ ! -d $APP ]; then
-  git clone $ENV_GIT_URL $APP 1>/dev/null
+# checkout the code into folder $app_$env
+if [ ! -d $KEY ]; then
+  git clone $ENV_GIT_URL $KEY 1>/dev/null
 fi
 
-cd $APP
+cd $KEY
 
 git checkout master 
 
-git pull -X theirs 1>/dev/null
+git pull -X theirs
 
-date > version.txt
+MESSAGE="ocd-slackbot deploy $TAG"
 
-git checkout -b $TAG
+if [ ! -f ./envvars ]; then
+  >&2 echo "ERROR no envvars in $(pwd)" 
+  exit 7
+fi
 
-git commit -am "ocd-slackbot deploy $TAG"
+sed -i "s/^${APP}_version=.*/${APP}_version=${TAG}/g" ./envvars
+
+if [[ "$?" != "0" ]]; then
+  >&2 echo "ERROR unable to replace ${APP}_version in $(pwd)/envvars" 
+  exit 8  
+fi
+
+git checkout -b $TAG && git commit -am $MESSAGE && git push origin $TAG
 
 if [[ "$?" == "128" ]]; then
   git config --global user.email "ocd-slackbot@example.com"
@@ -97,5 +112,4 @@ github.com:
 EOL
 fi
 
-#hub release create -m "ocd-slackbot release $TAG" $TAG
-hub pull-request -m "ocd-slackbot deploy $TAG"
+hub pull-request -m $MESSAGE
