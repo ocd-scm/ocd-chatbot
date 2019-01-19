@@ -2,7 +2,7 @@
 
 This is Botkit Chatbot configured for Slack. Botkit runs against many chat solutions and the ocd logic is bash scripts. So it would be easy to send us a PR to have it support many other chat solutions. 
 
-### Install wit OCD
+### Install with OCD
 
 There is a demo env repo over at https://github.com/ocd-scm/ocd-demo-env-chatbot with instructions at https://github.com/ocd-scm/ocd-meta/wiki/OpenShift-Online-Pro-(openshift-dot-com)#5-optional-setup-up-the-demo-chatbot
 
