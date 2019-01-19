@@ -69,34 +69,47 @@ fi
 
 cd $KEY
 
-git checkout master 2>/dev/null
+git checkout master 1>/dev/null 2>/dev/null
 
-git pull -X theirs 1>/dev/null
+if [[ "$?" != "0" ]]; then
+  git checkout master
+  >&2 echo "ERROR unable to `git checkout master` in $(pwd)" 
+  exit 8  
+fi
+
+git pull -X theirs 1>/dev/null 2>/dev/null
+
+if [[ "$?" != "0" ]]; then 
+  git pull -X theirs
+  >&2 echo "ERROR unable to  `git pull -X theirs` in $(pwd)" 
+  exit 89
+fi
+
 
 MESSAGE="ocd-slackbot deploy $TAG"
 
 if [ ! -f ./envvars ]; then
   >&2 echo "ERROR no envvars in $(pwd)" 
-  exit 7
+  exit 10
 fi
 
 sed -i "s/^${APP}_version=.*/${APP}_version=${TAG}/g" ./envvars
 
 if [[ "$?" != "0" ]]; then
   >&2 echo "ERROR unable to replace ${APP}_version in $(pwd)/envvars" 
-  exit 8  
+  exit 11
 fi
 
-git checkout -b "$TAG"
-git commit -am "$MESSAGE"
+git config --list | grep "ocd-slackbot@example.com"
 
-if [[ "$?" == "128" ]]; then
+if [[ "$?" != "0" ]]; then
   git config --global user.email "ocd-slackbot@example.com"
   git config --global user.name "OCD SlackBot"
   git config --global push.default matching
-  git commit -am "$MESSAGE"
 fi
-
+ 
+git checkout -b "$TAG"
+git commit -am "$MESSAGE"
 git push origin "$TAG"
 
 hub() { 
@@ -115,4 +128,4 @@ github.com:
 EOL
 fi
 
-hub pull-request -m $MESSAGE
+hub pull-request -m "$MESSAGE"
