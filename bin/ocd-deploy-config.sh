@@ -110,7 +110,7 @@ fi
  
 git checkout -b "$TAG"
 git commit -am "$MESSAGE"
-git push origin "$TAG"
+git push origin "$TAG" 1>/dev/null
 
 hub() { 
     $APP_ROOT/hub "$@" 
