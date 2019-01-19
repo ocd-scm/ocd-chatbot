@@ -127,6 +127,8 @@ module.exports = function(controller) {
                                 `code ${code} and signal ${signal}`;
                     console.log(msg);
                     bot.replyInThread(message, msg);
+                } else {
+                    bot.reply(message, `I have created a PR to promote ${APP} tagged ${TAG} to ${ENVIRONMENT}.`);
                 }
             });
 
