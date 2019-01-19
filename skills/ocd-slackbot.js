@@ -118,7 +118,7 @@ module.exports = function(controller) {
             bot.api.reactions.add({
                 timestamp: message.ts,
                 channel: message.channel,
-                name: '👍',
+                name: 'thumbsup',
             });
 
             child.on('exit', function (code, signal) {
@@ -137,7 +137,7 @@ module.exports = function(controller) {
 
             child.stderr.on('data', (data) => {
                 console.log(`${data}`);
-                bot.replyInThread(message, `stderr: ${data}`);
+                bot.replyInThread(message, `${data}`);
             });
 
             
