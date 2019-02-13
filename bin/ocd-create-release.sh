@@ -41,7 +41,7 @@ fi
 
 # we assume we have an env var $APP defined as key with value of git url
 ENV_GIT_URL=$(printf "%s" "${!APP}" )
-echo "ENV_GIT_URL=${ENV_GIT_URL}"
+#echo "ENV_GIT_URL=${ENV_GIT_URL}"
 
 # we are running in a random assigned uid with no matching /etc/password
 # so we sythesis an entry as per https://docs.openshift.com/enterprise/3.1/creating_images/guidelines.html#openshift-enterprise-specific-guidelines
@@ -79,12 +79,19 @@ fi
 
 # checkout the code
 if [ ! -d $APP ]; then
-  git clone --depth 1 --single-branch $ENV_GIT_URL $APP 1>/dev/null
+  if ! git clone --depth 1 --single-branch $ENV_GIT_URL $APP 1>/dev/null 2>/dev/null; then
+    echo "ERROR could not  git clone --depth 1 --single-branch $ENV_GIT_URL "
+    exit 6
+  fi
 fi
 
 cd $APP
 
-git pull -X theirs 1>/dev/null
+if ! git pull -X theirs 1>/dev/null 2>/dev/null; then
+  echo "ERROR could not git pull -X theirs in $PWD"
+  exit 7
+fi
+
 
 hub() { 
     $APP_ROOT/hub "$@" 
@@ -102,4 +109,6 @@ github.com:
 EOL
 fi
 
-hub release create -m "ocd-slackbot release $TAG" -t $SHA $TAG
+if ! hub release create -m "ocd-slackbot release $TAG" -t $SHA $TAG; then
+  echo "ERROR in folder $PWD could not hub release create -m "ocd-slackbot release $TAG" -t $SHA $TAG"
+fi
