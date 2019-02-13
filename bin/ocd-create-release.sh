@@ -79,8 +79,8 @@ fi
 
 # checkout the code
 if [ ! -d $APP ]; then
-  if ! git clone --depth 1 --single-branch $ENV_GIT_URL $APP 1>/dev/null 2>/dev/null; then
-    echo "ERROR could not  git clone --depth 1 --single-branch $ENV_GIT_URL "
+  if ! git clone --single-branch $ENV_GIT_URL $APP 1>/dev/null 2>/dev/null; then
+    echo "ERROR could not  git clone --single-branch $ENV_GIT_URL "
     exit 6
   fi
 fi
@@ -91,7 +91,6 @@ if ! git pull -X theirs 1>/dev/null 2>/dev/null; then
   echo "ERROR could not git pull -X theirs in $PWD"
   exit 7
 fi
-
 
 hub() { 
     $APP_ROOT/hub "$@" 
@@ -109,6 +108,6 @@ github.com:
 EOL
 fi
 
-if ! hub release create -m "ocd-slackbot release $TAG" -t $SHA $TAG; then
-  echo "ERROR in folder $PWD could not hub release create -m "ocd-slackbot release $TAG" -t $SHA $TAG"
+if ! hub release create -m "ocd-slackbot release $TAG --commitish=$SHA $TAG"; then
+  echo "ERROR in folder $PWD could not hub release create -m "ocd-slackbot release $TAG" --commitish=$SHA $TAG"
 fi
