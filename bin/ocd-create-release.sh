@@ -41,6 +41,7 @@ fi
 
 # we assume we have an env var $APP defined as key with value of git url
 ENV_GIT_URL=$(printf "%s" "${!APP}" )
+echo "ENV_GIT_URL=${ENV_GIT_URL}"
 
 # we are running in a random assigned uid with no matching /etc/password
 # so we sythesis an entry as per https://docs.openshift.com/enterprise/3.1/creating_images/guidelines.html#openshift-enterprise-specific-guidelines
@@ -54,6 +55,27 @@ export NSS_WRAPPER_PASSWD=/tmp/passwd
 export NSS_WRAPPER_GROUP=/etc/group
 
 cd $APP_ROOT
+
+# if using git ssh we need different ssh deploy keys for each repo
+# https://snipe.net/2013/04/11/multiple-github-deploy-keys-single-server/
+if [[ "$ENV_GIT_URL" =~ ^git@.* ]]; then
+  if [[ ! -d  ~/.ssh ]]; then
+    mkdir -p ~/.ssh
+  fi
+  if [[ ! -f ~/.ssh/config ]]; then
+    touch ~/.ssh/config
+  fi
+  if ! grep $APP  ~/.ssh/config ; then
+    (APP=$APP; cat <<EOF >> ~/.ssh/config
+Host repo-$APP github.com
+Hostname github.com
+IdentityFile /opt/app-root/$APP-deploykey/$APP-deploykey
+StrictHostKeyChecking no
+EOF
+    )
+  fi
+  ENV_GIT_URL=$(echo $ENV_GIT_URL | sed "s/github.com/repo-$APP/1")
+fi
 
 # checkout the code
 if [ ! -d $APP ]; then
