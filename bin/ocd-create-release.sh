@@ -108,6 +108,6 @@ github.com:
 EOL
 fi
 
-if ! hub release create -m "ocd-slackbot release $TAG --commitish=$SHA $TAG"; then
-  echo "ERROR in folder $PWD could not hub release create -m "ocd-slackbot release $TAG" --commitish=$SHA $TAG"
+if ! hub release create -m "ocd-slackbot release $TAG" --commitish=$SHA $TAG; then
+  echo "ERROR in folder $PWD could hub release create -m 'ocd-slackbot release $TAG'' --commitish=$SHA $TAG"
 fi
