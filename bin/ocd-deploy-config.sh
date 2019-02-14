@@ -16,8 +16,8 @@ fi
 TAG=$2
 
 if [[ -z "$TAG" ]]; then
-  TAG=$(printf "v%s" $(date +"%Y_%m_%d_%H_%M_%S") )
-  echo "creating tag $TAG"
+  >&2 echo "ERROR please supply TAG."
+  exit 3
 fi
 
 ENVIRONMENT=$3
