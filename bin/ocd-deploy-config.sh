@@ -38,7 +38,7 @@ if [ -z "$GITHUB_OAUTH_TOKEN" ]; then
   exit 5
 fi
 
-KEY=$(printf "%s_%s" "$APP" "$ENVIRONMENT")		
+KEY=$( echo $ENVIRONMENT | tr '-' '_' )
 
 source $APP_ROOT/src/bin/ocd-checkout.sh
 
