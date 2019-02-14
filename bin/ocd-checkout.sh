@@ -26,21 +26,23 @@ if [[ "$ENV_GIT_URL" =~ ^git@.* ]]; then
   if [[ ! -f ~/.ssh/config ]]; then
     touch ~/.ssh/config
   fi
-  if ! grep $APP  ~/.ssh/config ; then
-    (APP=$APP; cat <<EOF >> ~/.ssh/config
-Host repo-$APP github.com
+  if ! grep $KEY  ~/.ssh/config 1>/dev/null ; then
+    (APP=$KEY; cat <<EOF >> ~/.ssh/config
+Host repo-$KEY github.com
 Hostname github.com
-IdentityFile /opt/app-root/$APP-deploykey/$APP-deploykey
+IdentityFile /opt/app-root/$KEY-deploykey/$KEY-deploykey
 StrictHostKeyChecking no
 EOF
     )
   fi
-  ENV_GIT_URL=$(echo $ENV_GIT_URL | sed "s/github.com/repo-$APP/1")
+  ENV_GIT_URL=$(echo $ENV_GIT_URL | sed "s/github.com/repo-$KEY/1")
 fi
 
 # checkout the code
 if [ ! -d $KEY ]; then
   if ! git clone --single-branch $ENV_GIT_URL $KEY 1>/dev/null 2>/dev/null; then
+    # do it again just to see the error message
+    git clone --single-branch $ENV_GIT_URL $KEY
     echo "ERROR could not  git clone --single-branch $ENV_GIT_URL "
     exit 6
   fi
@@ -49,6 +51,8 @@ fi
 cd $KEY
 
 if ! git pull -X theirs 1>/dev/null 2>/dev/null; then
+  # do it again just to see the error message
+  git pull -X theirs
   echo "ERROR could not git pull -X theirs in $PWD"
   exit 7
 fi
