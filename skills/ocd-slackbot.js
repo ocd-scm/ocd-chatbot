@@ -94,7 +94,8 @@ module.exports = function(controller) {
                     var msg =  'child process exited with ' +
                                 `code ${code} and signal ${signal}`;
                     console.log(msg);
-                    bot.replyInThread(message, msg);
+                    bot.replyInThread('Success. The new release is '+message+' and it should be built into a container with the same tag in a couple of minutes.', msg);
+
                 }
             });
 
