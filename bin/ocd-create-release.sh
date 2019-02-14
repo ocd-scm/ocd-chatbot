@@ -1,7 +1,7 @@
 #!/bin/bash
 set +x
 
-APP=$1
+APP=echo( $1 |  tr '-' '_')
 
 if [[ -z "$APP" ]]; then
   >&2 echo "ERROR please define APP"
@@ -10,7 +10,7 @@ fi
 
 # https://unix.stackexchange.com/a/251896/72040
 if [[ -z "${!APP}" ]]; then
-  >&2 echo "ERROR no git url defind with key ${APP}"
+  >&2 echo "ERROR no git url defind with key ${APP}. Note: use underscores not hyphens."
   exit 2
 fi
 
