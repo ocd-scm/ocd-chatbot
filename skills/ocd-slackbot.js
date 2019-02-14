@@ -62,6 +62,14 @@ module.exports = function(controller) {
     }
 
     controller.hears([
+            '^help', '^--help', '^?'], 
+            'direct_message,direct_mention', function(bot, message) {
+        bot.replyInThread(message, 'Tell me to `create a release` or `deploy` for more help with commands.')
+        bot.replyInThread(message, '`create a release` will create a github release, with a git tag, and build a container with that code and tag.')
+        bot.replyInThread(message, '`deploy` will create a PR in the config repo for changing the container tag running in an environment.s')
+    });
+
+    controller.hears([
             '^create a release of (.*) from (.*) with tag (.*)',
             '^create a release of (.*) from (.*)',
             '^create a release'], 
@@ -76,35 +84,41 @@ module.exports = function(controller) {
             }
             const child = spawn(OCD_RELEASE, argsArray);
             console.log(`APP=${APP}, SHA=${SHA}, OCD_RELEASE=${OCD_RELEASE}`);
-            bot.reply(message, 'Working on it...');
+            
+            bot.api.reactions.add({
+                timestamp: message.ts,
+                channel: message.channel,
+                name: 'thumbsup',
+            });
+
             child.on('exit', function (code, signal) {
                 if( `${code}` !== "0" ) {
                     var msg =  'child process exited with ' +
                                 `code ${code} and signal ${signal}`;
                     console.log(msg);
-                    bot.reply(message, msg);
+                    bot.replyInThread(message, msg);
                 }
             });
 
             child.stdout.on('data', (data) => {
                 console.log(`${data}`);
-                bot.reply(message, `${data}`);
+                bot.replyInThread(message, `${data}`);
             });
 
             child.stderr.on('data', (data) => {
                 console.log(`${data}`);
-                bot.reply(message, `${data}`);
+                bot.replyInThread(message, `${data}`);
             });
 
             
         } else {
-            bot.reply(message, 'Tell me to `create a release of $APP from $COMMITISH` or `create a release of $APP from $COMMITISH with tag $TAG` where $COMMITISH can be a commit sha, or bramch.')
+            bot.replyInThread(message, 'Tell me to `create a release of $APP from $COMMITISH` or `create a release of $APP from $COMMITISH with tag $TAG` where $COMMITISH can be a commit sha, or bramch.')
         }
     });
 
    controller.hears([
             '^deploy (.*) version (.*) to (.*)',
-            '^deploy '], 
+            '^deploy'], 
             'direct_message,direct_mention', function(bot, message) {
         if (message.match[1]) {
             const APP = message.match[1];
@@ -128,7 +142,7 @@ module.exports = function(controller) {
                     console.log(msg);
                     bot.replyInThread(message, msg);
                 } else {
-                    bot.reply(message, `I have created a PR to promote ${APP} tagged ${TAG} to ${ENVIRONMENT}.`);
+                    bot.replyInThread(message, `I have created a PR to promote ${APP} tagged ${TAG} to ${ENVIRONMENT}. Please merge the PR to at the link above.`);
                 }
             });
 
@@ -144,7 +158,7 @@ module.exports = function(controller) {
 
             
         } else {
-            bot.reply(message, 'Tell me to `deploy $APP version $TAG to $ENV`')
+            bot.replyInThread(message, 'Tell me to `deploy $APP version $TAG to $ENV`')
         }
     });
 
