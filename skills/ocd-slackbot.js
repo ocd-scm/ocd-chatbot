@@ -65,8 +65,6 @@ module.exports = function(controller) {
             '^help', '^--help', '^?'], 
             'direct_message,direct_mention', function(bot, message) {
         bot.replyInThread(message, 'Tell me to `create a release` or `deploy` for more help with commands.')
-        bot.replyInThread(message, '`create a release` will create a github release, with a git tag, and build a container with that code and tag.')
-        bot.replyInThread(message, '`deploy` will create a PR in the config repo for changing the container tag running in an environment.s')
     });
 
     controller.hears([
@@ -112,7 +110,7 @@ module.exports = function(controller) {
 
             
         } else {
-            bot.replyInThread(message, 'Tell me to `create a release of $APP from $COMMITISH` or `create a release of $APP from $COMMITISH with tag $TAG` where $COMMITISH can be a commit sha, or bramch.')
+            bot.replyInThread(message, 'Tell me to `create a release of $APP from $COMMITISH` or `create a release of $APP from $COMMITISH with tag $TAG` where $COMMITISH can be a commit sha, or bramch. I will then create a github release, with a git tag, that OCD will automatically build container with that code and tag.')
         }
     });
 
@@ -158,7 +156,7 @@ module.exports = function(controller) {
 
             
         } else {
-            bot.replyInThread(message, 'Tell me to `deploy $APP version $TAG to $ENV`')
+            bot.replyInThread(message, 'Tell me to `deploy $APP version $TAG to $ENV`. I will then create a PR in the config repo for changing the container tag running in an environment. When you merge the PR OCD will do the deplouyment.')
         }
     });
 
