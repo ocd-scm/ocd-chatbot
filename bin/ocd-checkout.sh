@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# we assume we have an env var $APP defined as key with value of git url
-ENV_GIT_URL=$(printf "%s" "${!APP}" )
+# we assume we have an env var $KEY defined as key with value of git url
+ENV_GIT_URL=$(printf "%s" "${!KEY}" )
 #echo "ENV_GIT_URL=${ENV_GIT_URL}"
 
 # we are running in a random assigned uid with no matching /etc/password
@@ -39,14 +39,14 @@ EOF
 fi
 
 # checkout the code
-if [ ! -d $APP ]; then
-  if ! git clone --single-branch $ENV_GIT_URL $APP 1>/dev/null 2>/dev/null; then
+if [ ! -d $KEY ]; then
+  if ! git clone --single-branch $ENV_GIT_URL $KEY 1>/dev/null 2>/dev/null; then
     echo "ERROR could not  git clone --single-branch $ENV_GIT_URL "
     exit 6
   fi
 fi
 
-cd $APP
+cd $KEY
 
 if ! git pull -X theirs 1>/dev/null 2>/dev/null; then
   echo "ERROR could not git pull -X theirs in $PWD"

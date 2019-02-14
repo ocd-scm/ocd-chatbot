@@ -38,6 +38,8 @@ if [ -z "$GITHUB_OAUTH_TOKEN" ]; then
   exit 5
 fi
 
+KEY=$(printf "%s_%s" "$APP" "$ENVIRONMENT")		
+
 source $APP_ROOT/src/bin/ocd-checkout.sh
 
 MESSAGE="ocd-slackbot deploy $TAG"
