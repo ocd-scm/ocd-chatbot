@@ -24,7 +24,7 @@ fi
 TAG=$3
 
 if [[ -z "$TAG" ]]; then
-  TAG=$(printf "v%s" $(date +"%Y_%m_%d_%H_%M_%S") )
+  TAG=$(printf "v%s" $(date +"%Y%m%d_%H%M%S") )
   echo "creating tag $TAG"
 fi
 
