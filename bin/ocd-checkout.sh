@@ -80,9 +80,7 @@ fi
 
 # configure git push
 
-git config --list | grep "ocd-slackbot@example.com"
-
-if [[ "$?" != "0" ]]; then
+if ! git config --list | grep "ocd-slackbot@example.com" 1>/dev/null; then
   git config --global user.email "ocd-slackbot@example.com"
   git config --global user.name "OCD SlackBot"
   git config --global push.default matching
