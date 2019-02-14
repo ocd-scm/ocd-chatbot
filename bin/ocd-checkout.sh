@@ -4,6 +4,9 @@
 ENV_GIT_URL=$(printf "%s" "${!KEY}" )
 #echo "ENV_GIT_URL=${ENV_GIT_URL}"
 
+# extract the repo short name
+REPO_SHORT_NAME=$(echo $ENV_GIT_URL | sed 's/.*\/\([^\.]*\)\.git/\1/g')
+
 # we are running in a random assigned uid with no matching /etc/password
 # so we sythesis an entry as per https://docs.openshift.com/enterprise/3.1/creating_images/guidelines.html#openshift-enterprise-specific-guidelines
 export USER_ID=$(id -u)
@@ -26,29 +29,29 @@ if [[ "$ENV_GIT_URL" =~ ^git@.* ]]; then
   if [[ ! -f ~/.ssh/config ]]; then
     touch ~/.ssh/config
   fi
-  if ! grep $KEY  ~/.ssh/config 1>/dev/null ; then
-    (APP=$KEY; cat <<EOF >> ~/.ssh/config
-Host repo-$KEY github.com
+  if ! grep $REPO_SHORT_NAME  ~/.ssh/config 1>/dev/null ; then
+    (APP=$KEREPO_SHORT_NAMEY; cat <<EOF >> ~/.ssh/config
+Host repo-$REPO_SHORT_NAME github.com
 Hostname github.com
-IdentityFile /opt/app-root/$KEY-deploykey/$KEY-deploykey
+IdentityFile /opt/app-root/$REPO_SHORT_NAME-deploykey/$REPO_SHORT_NAME-deploykey
 StrictHostKeyChecking no
 EOF
     )
   fi
-  ENV_GIT_URL=$(echo $ENV_GIT_URL | sed "s/github.com/repo-$KEY/1")
+  ENV_GIT_URL=$(echo $ENV_GIT_URL | sed "s/github.com/repo-$REPO_SHORT_NAME/1")
 fi
 
 # checkout the code
-if [ ! -d $KEY ]; then
-  if ! git clone --single-branch $ENV_GIT_URL $KEY 1>/dev/null 2>/dev/null; then
+if [ ! -d $REPO_SHORT_NAME ]; then
+  if ! git clone --single-branch $ENV_GIT_URL $REPO_SHORT_NAME 1>/dev/null 2>/dev/null; then
     # do it again just to see the error message
-    git clone --single-branch $ENV_GIT_URL $KEY
+    git clone --single-branch $ENV_GIT_URL $REPO_SHORT_NAME
     echo "ERROR could not  git clone --single-branch $ENV_GIT_URL "
     exit 6
   fi
 fi
 
-cd $KEY
+cd $REPO_SHORT_NAME
 
 if ! git pull -X theirs 1>/dev/null 2>/dev/null; then
   # do it again just to see the error message
