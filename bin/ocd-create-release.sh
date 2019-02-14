@@ -1,7 +1,7 @@
 #!/bin/bash
 set +x
 
-APP=echo( $1 |  tr '-' '_')
+APP=$( echo $1 |  tr '-' '_')
 
 if [[ -z "$APP" ]]; then
   >&2 echo "ERROR please define APP"
