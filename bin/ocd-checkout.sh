@@ -66,6 +66,7 @@ hub() {
     $APP_ROOT/hub "$@" 
 }
 
+# TODO now that we use ssh can this be deleted
 if [[ ! -f ~/.config/hub ]]; then
   mkdir -p ~/.config
 # https://github.com/github/hub/issues/978#issuecomment-131964409
