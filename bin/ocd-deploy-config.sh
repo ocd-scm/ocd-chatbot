@@ -49,15 +49,26 @@ if [ ! -f ./envvars ]; then
   exit 10
 fi
 
-sed -i "s/^${APP}_version=.*/${APP}_version=${TAG}/g" ./envvars
-
-if [[ "$?" != "0" ]]; then
+if ! sed -i "s/^${APP}_version=.*/${APP}_version=${TAG}/g" ./envvars; then
   >&2 echo "ERROR unable to replace ${APP}_version in $(pwd)/envvars" 
   exit 11
 fi
  
-git checkout -b "$TAG"
-git commit -am "$MESSAGE"
-git push origin "$TAG" 1>/dev/null
+if !git checkout -b "$TAG" 2>/dev/null 1>/dev/null; then
+  >&2 echo "WARNING failed to create branch $TAG it might exist continuing." 
+fi
 
-hub pull-request -m "$MESSAGE"
+if ! git commit -am "$MESSAGE" 1>/dev/null; then
+  >&2 echo "ERROR failed to commit modification to versions" 
+  exit 12
+fi
+
+if ! git push origin "$TAG" 1>/dev/null; then
+  >&2 echo "ERROR failed to git push origin $TAG"
+  exit 13
+fi
+
+if ! hub pull-request -m "$MESSAGE"; then
+  >&2 echo "ERROR failed to hub pull-request -m $MESSAGE"
+  exit 14
+fi
