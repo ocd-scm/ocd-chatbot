@@ -38,53 +38,7 @@ if [ -z "$GITHUB_OAUTH_TOKEN" ]; then
   exit 5
 fi
 
-# we lookup the git url by "$app_$env"
-KEY=$(printf "%s_%s" "$APP" "$ENVIRONMENT")
-
-# this prints the value assocaited with the env var $KEY
-ENV_GIT_URL=$(printf "%s" "${!KEY}" )
-
-if [ -z "$ENV_GIT_URL" ]; then
-  >&2 echo "ERROR could not resolve ENV_GIT_URL for key $KEY" 
-  exit 6
-fi
-
-# we are running in a random assigned uid with no matching /etc/password
-# so we sythesis an entry as per https://docs.openshift.com/enterprise/3.1/creating_images/guidelines.html#openshift-enterprise-specific-guidelines
-export USER_ID=$(id -u)
-export GROUP_ID=$(id -g)
-cat /etc/passwd > /tmp/passwd
-echo ocd:x:${USER_ID}:${GROUP_ID}:OCD Env Webhookr:${HOME}:/bin/bash > ./passwd.template
-envsubst < ./passwd.template >> /tmp/passwd
-export LD_PRELOAD=libnss_wrapper.so
-export NSS_WRAPPER_PASSWD=/tmp/passwd
-export NSS_WRAPPER_GROUP=/etc/group
-
-cd $APP_ROOT
-
-# checkout the code into folder $app_$env
-if [ ! -d $KEY ]; then
-  git clone $ENV_GIT_URL $KEY 1>/dev/null
-fi
-
-cd $KEY
-
-git checkout master 1>/dev/null 2>/dev/null
-
-if [[ "$?" != "0" ]]; then
-  git checkout master
-  >&2 echo "ERROR unable to `git checkout master` in $(pwd)" 
-  exit 8  
-fi
-
-git pull -X theirs 1>/dev/null 2>/dev/null
-
-if [[ "$?" != "0" ]]; then 
-  git pull -X theirs
-  >&2 echo "ERROR unable to  `git pull -X theirs` in $(pwd)" 
-  exit 89
-fi
-
+source $APP_ROOT/src/bin/ocd-checkout.sh
 
 MESSAGE="ocd-slackbot deploy $TAG"
 
@@ -99,33 +53,9 @@ if [[ "$?" != "0" ]]; then
   >&2 echo "ERROR unable to replace ${APP}_version in $(pwd)/envvars" 
   exit 11
 fi
-
-git config --list | grep "ocd-slackbot@example.com"
-
-if [[ "$?" != "0" ]]; then
-  git config --global user.email "ocd-slackbot@example.com"
-  git config --global user.name "OCD SlackBot"
-  git config --global push.default matching
-fi
  
 git checkout -b "$TAG"
 git commit -am "$MESSAGE"
 git push origin "$TAG" 1>/dev/null
-
-hub() { 
-    $APP_ROOT/hub "$@" 
-}
-
-if [[ ! -f ~/.config/hub ]]; then
-  mkdir -p ~/.config
-# https://github.com/github/hub/issues/978#issuecomment-131964409
-cat >~/.config/hub <<EOL
----
-github.com:
-- protocol: https
-  user: ${GITHUB_USER}
-  oauth_token: ${GITHUB_OAUTH_TOKEN}
-EOL
-fi
 
 hub pull-request -m "$MESSAGE"
