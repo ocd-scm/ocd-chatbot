@@ -30,7 +30,7 @@ if [[ "$ENV_GIT_URL" =~ ^git@.* ]]; then
     touch ~/.ssh/config
   fi
   if ! grep $REPO_SHORT_NAME  ~/.ssh/config 1>/dev/null ; then
-    (APP=$REPO_SHORT_NAMEY; cat <<EOF >> ~/.ssh/config
+    (APP=$REPO_SHORT_NAME; cat <<EOF >> ~/.ssh/config
 Host repo-$REPO_SHORT_NAME github.com
 Hostname github.com
 IdentityFile /opt/app-root/$REPO_SHORT_NAME-deploykey/$REPO_SHORT_NAME-deploykey
