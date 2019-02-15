@@ -141,7 +141,7 @@ module.exports = function(controller) {
                     console.log(msg);
                     bot.replyInThread(message, msg);
                 } else {
-                    bot.replyInThread(message, `I have created a PR to promote ${APP} tagged ${TAG} to ${ENVIRONMENT}. Please merge the PR to at the link above.`);
+                    bot.replyInThread(message, `I have created a PR to promote ${APP} tagged ${TAG} to ${ENVIRONMENT}. Please merge the PR.`);
                 }
             });
 
