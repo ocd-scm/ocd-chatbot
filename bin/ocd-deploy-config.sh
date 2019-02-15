@@ -61,8 +61,8 @@ fi
 
 BRANCH=$(date +"%Y%m%d_%H%M%S")
 
-if !git checkout -b "$BRANCH" 1>"$ERRORTMPDIR/stdout" 2>"$ERRORTMPDIR/stderr"; then
-  >&2 echo "WARNING failed to create branch $TAG it might exist continuing." 
+if ! git checkout -b "$BRANCH" 1>"$ERRORTMPDIR/stdout" 2>"$ERRORTMPDIR/stderr"; then
+  >&2 echo "WARNING failed to create branch $TAG it might exist. Continuing." 
   cat $ERRORTMPDIR/stdout
   cat $ERRORTMPDIR/stderr
 fi
