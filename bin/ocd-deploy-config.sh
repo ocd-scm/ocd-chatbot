@@ -84,6 +84,4 @@ fi
 if ! hub pull-request -m "$MESSAGE"; then
   >&2 echo "ERROR failed to hub pull-request -m $MESSAGE on branch $BRANCH"
   exit 14
-else
-  git checkout master 1>/dev/null && git branch -d "$BRANCH" 1>/dev/null
 fi
