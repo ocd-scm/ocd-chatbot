@@ -53,20 +53,27 @@ fi
 if [ ! -d $REPO_SHORT_NAME ]; then
   if ! git clone --single-branch $ENV_GIT_URL $REPO_SHORT_NAME 1>"$ERRORTMPDIR/stdout" 2>"$ERRORTMPDIR/stderr"; then
     # do it again just to see the error message
-    >&2 echo "ERROR could not  git clone --single-branch $ENV_GIT_URL"
+    >&2 echo "ERROR could not git clone --single-branch $ENV_GIT_URL"
     cat $ERRORTMPDIR/stdout
     cat $ERRORTMPDIR/stderr
     exit 7
   fi
   cd $REPO_SHORT_NAME
 else
-    cd $REPO_SHORT_NAME 
+    cd $REPO_SHORT_NAME
+    if ! git checkout -f master 1>"$ERRORTMPDIR/stdout" 2>"$ERRORTMPDIR/stderr"; then
+        # do it again just to see the error message
+        >&2 echo "ERROR could not git checkout -f master in $PWD"
+        cat $ERRORTMPDIR/stdout
+        cat $ERRORTMPDIR/stderr
+        exit 8
+    fi    
     if ! git pull -X theirs 1>"$ERRORTMPDIR/stdout" 2>"$ERRORTMPDIR/stderr"; then
         # do it again just to see the error message
         >&2 echo "ERROR could not git pull -X theirs in $PWD"
         cat $ERRORTMPDIR/stdout
         cat $ERRORTMPDIR/stderr
-        exit 8
+        exit 9
     fi
 fi
 
