@@ -81,7 +81,7 @@ module.exports = function(controller) {
                 argsArray.push(TAG);
             }
             const child = spawn(OCD_RELEASE, argsArray);
-            console.log(`APP=${APP}, SHA=${SHA}, OCD_RELEASE=${OCD_RELEASE}`);
+            console.log(`${OCD_RELEASE} APP=${APP}; SHA=${SHA}; OCD_RELEASE=${OCD_RELEASE}`);
             
             bot.api.reactions.add({
                 timestamp: message.ts,
@@ -91,7 +91,7 @@ module.exports = function(controller) {
 
             child.on('exit', function (code, signal) {
                 if( `${code}` !== "0" ) {
-                    var msg =  'child process exited with ' +
+                    var msg =  'ERROR child process exited with ' +
                                 `code ${code} and signal ${signal}`;
                     console.log(msg);
                     bot.replyInThread('Success. The new release is '+message+' and it should be built into a container with the same tag in a couple of minutes.', msg);
@@ -126,7 +126,7 @@ module.exports = function(controller) {
 
             var argsArray = [APP, TAG, ENVIRONMENT];
             const child = spawn(OCD_DEPLOY, argsArray);
-            console.log(`APP=${APP}, TAG=${TAG}, ENVIRONMENT=${ENVIRONMENT}`);
+            console.log(`${OCD_DEPLOY}, APP=${APP}; TAG=${TAG}; ENVIRONMENT=${ENVIRONMENT}`);
             
             bot.api.reactions.add({
                 timestamp: message.ts,
@@ -136,7 +136,7 @@ module.exports = function(controller) {
 
             child.on('exit', function (code, signal) {
                 if( `${code}` !== "0" ) {
-                    var msg =  'child process exited with ' +
+                    var msg =  'Error child process exited with ' +
                                 `code ${code} and signal ${signal}`;
                     console.log(msg);
                     bot.replyInThread(message, msg);
