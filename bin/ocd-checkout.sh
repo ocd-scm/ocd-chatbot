@@ -53,16 +53,16 @@ if [ ! -d $REPO_SHORT_NAME ]; then
     cat $ERRORTMPDIR/stderr
     exit 6
   fi
-fi
-
-cd $REPO_SHORT_NAME
-
-if ! git pull -X theirs 1>"$ERRORTMPDIR/stdout" 2>"$ERRORTMPDIR/stderr"; then
-  # do it again just to see the error message
-  echo "ERROR could not git pull -X theirs in $PWD"
-  cat $ERRORTMPDIR/stdout
-  cat $ERRORTMPDIR/stderr
-  exit 7
+  cd $REPO_SHORT_NAME
+else
+    cd $REPO_SHORT_NAME 
+    if ! git pull -X theirs 1>"$ERRORTMPDIR/stdout" 2>"$ERRORTMPDIR/stderr"; then
+        # do it again just to see the error message
+        echo "ERROR could not git pull -X theirs in $PWD"
+        cat $ERRORTMPDIR/stdout
+        cat $ERRORTMPDIR/stderr
+        exit 7
+    fi
 fi
 
 # configure hub
