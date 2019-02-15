@@ -7,6 +7,11 @@ trap "rm -rf $ERRORTMPDIR" EXIT
 ENV_GIT_URL=$(printf "%s" "${!KEY}" )
 #echo "ENV_GIT_URL=${ENV_GIT_URL}"
 
+if [ -z "$ENV_GIT_URL" ]; then
+  >&2 echo "ERROR No git repo url defined under env var key $KEY."
+  exit 6
+fi
+
 # extract the repo short name
 REPO_SHORT_NAME=$(echo $ENV_GIT_URL | sed 's/.*\/\([^\.]*\)\.git/\1/g')
 
@@ -48,20 +53,20 @@ fi
 if [ ! -d $REPO_SHORT_NAME ]; then
   if ! git clone --single-branch $ENV_GIT_URL $REPO_SHORT_NAME 1>"$ERRORTMPDIR/stdout" 2>"$ERRORTMPDIR/stderr"; then
     # do it again just to see the error message
-    echo "ERROR could not  git clone --single-branch $ENV_GIT_URL"
+    >&2 echo "ERROR could not  git clone --single-branch $ENV_GIT_URL"
     cat $ERRORTMPDIR/stdout
     cat $ERRORTMPDIR/stderr
-    exit 6
+    exit 7
   fi
   cd $REPO_SHORT_NAME
 else
     cd $REPO_SHORT_NAME 
     if ! git pull -X theirs 1>"$ERRORTMPDIR/stdout" 2>"$ERRORTMPDIR/stderr"; then
         # do it again just to see the error message
-        echo "ERROR could not git pull -X theirs in $PWD"
+        >&2 echo "ERROR could not git pull -X theirs in $PWD"
         cat $ERRORTMPDIR/stdout
         cat $ERRORTMPDIR/stderr
-        exit 7
+        exit 8
     fi
 fi
 

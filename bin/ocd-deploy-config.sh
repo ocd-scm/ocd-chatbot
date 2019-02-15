@@ -29,14 +29,14 @@ fi
 
 # TODO now that we use ssh can this be deleted
 if [ -z "$GITHUB_USER" ]; then
-  echo "Please define GITHUB_USER so that we can push a release to github"
+  >&2 echo "Please define GITHUB_USER so that we can push a release to github"
   exit 4
 fi
 
 # TODO now that we use ssh can this be deleted
 # https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/
 if [ -z "$GITHUB_OAUTH_TOKEN" ]; then
-  echo "Please define GITHUB_OAUTH_TOKEN so that we can make a pull request"
+  >&2 echo "Please define GITHUB_OAUTH_TOKEN so that we can make a pull request"
   exit 5
 fi
 

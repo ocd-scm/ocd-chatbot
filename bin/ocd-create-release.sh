@@ -25,17 +25,16 @@ TAG=$3
 
 if [[ -z "$TAG" ]]; then
   TAG=$(printf "v%s" $(date +"%Y%m%d_%H%M%S") )
-  echo "creating tag $TAG"
 fi
 
 if [ -z "$GITHUB_USER" ]; then
-  echo "Please define GITHUB_USER so that we can push a release to github"
+  >&2 echo "Please define GITHUB_USER so that we can push a release to github"
   exit 4
 fi
 
 # https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/
 if [ -z "$GITHUB_OAUTH_TOKEN" ]; then
-  echo "Please define GITHUB_OAUTH_TOKEN so that we can push a release to github"
+  >&2 echo "Please define GITHUB_OAUTH_TOKEN so that we can push a release to github"
   exit 5
 fi
 
@@ -44,5 +43,5 @@ KEY=$APP
 source $APP_ROOT/src/bin/ocd-checkout.sh
 
 if ! hub release create -m "ocd-slackbot release $TAG" --commitish=$SHA $TAG; then
-  echo "ERROR in folder $PWD could hub release create -m 'ocd-slackbot release $TAG'' --commitish=$SHA $TAG"
+  >&2 echo "ERROR in folder $PWD could hub release create -m 'ocd-slackbot release $TAG'' --commitish=$SHA $TAG"
 fi
