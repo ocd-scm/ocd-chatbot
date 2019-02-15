@@ -1,5 +1,8 @@
 #!/bin/bash
 
+ERRORTMPDIR=$(mktemp -d)
+trap "rm -rf $ERRORTMPDIR" EXIT
+
 # we assume we have an env var $KEY defined as key with value of git url
 ENV_GIT_URL=$(printf "%s" "${!KEY}" )
 #echo "ENV_GIT_URL=${ENV_GIT_URL}"
@@ -43,20 +46,22 @@ fi
 
 # checkout the code
 if [ ! -d $REPO_SHORT_NAME ]; then
-  if ! git clone --single-branch $ENV_GIT_URL $REPO_SHORT_NAME 1>/dev/null 2>/dev/null; then
+  if ! git clone --single-branch $ENV_GIT_URL $REPO_SHORT_NAME 1>"$ERRORTMPDIR/stdout" 2>"$ERRORTMPDIR/stderr"; then
     # do it again just to see the error message
-    git clone --single-branch $ENV_GIT_URL $REPO_SHORT_NAME
-    echo "ERROR could not  git clone --single-branch $ENV_GIT_URL "
+    echo "ERROR could not  git clone --single-branch $ENV_GIT_URL"
+    cat $ERRORTMPDIR/stdout
+    cat $ERRORTMPDIR/stderr
     exit 6
   fi
 fi
 
 cd $REPO_SHORT_NAME
 
-if ! git pull -X theirs 1>/dev/null 2>/dev/null; then
+if ! git pull -X theirs 1>"$ERRORTMPDIR/stdout" 2>"$ERRORTMPDIR/stderr"; then
   # do it again just to see the error message
-  git pull -X theirs
   echo "ERROR could not git pull -X theirs in $PWD"
+  cat $ERRORTMPDIR/stdout
+  cat $ERRORTMPDIR/stderr
   exit 7
 fi
 
@@ -86,3 +91,5 @@ if ! git config --list | grep "ocd-slackbot@example.com" 1>/dev/null; then
   git config --global user.name "OCD SlackBot"
   git config --global push.default matching
 fi
+
+rm -rf $ERRORTMPDIR

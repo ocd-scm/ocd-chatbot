@@ -44,6 +44,9 @@ KEY=$( echo $ENVIRONMENT | tr '-' '_' )
 
 source $APP_ROOT/src/bin/ocd-checkout.sh
 
+ERRORTMPDIR=$(mktemp -d)
+trap "rm -rf $ERRORTMPDIR" EXIT
+
 MESSAGE="ocd-slackbot deploy $TAG"
 
 if [ ! -f ./envvars ]; then
@@ -55,20 +58,26 @@ if ! sed -i "s/^${APP}_version=.*/${APP}_version=${TAG}/g" ./envvars; then
   >&2 echo "ERROR unable to replace ${APP}_version in $(pwd)/envvars" 
   exit 11
 fi
- 
-if !git checkout -b "$TAG" 2>/dev/null 1>/dev/null; then
-  >&2 echo "WARNING failed to create branch $TAG it might exist continuing." 
-fi
-
-if ! git commit -am "$MESSAGE" 1>/dev/null; then
-  >&2 echo "ERROR failed to commit modification to versions" 
-  exit 12
-fi
 
 BRANCH=$(date +"%Y%m%d_%H%M%S")
 
-if ! git push origin "$BRANCH" 1>/dev/null; then
+if !git checkout -b "$BRANCH" 1>"$ERRORTMPDIR/stdout" 2>"$ERRORTMPDIR/stderr"; then
+  >&2 echo "WARNING failed to create branch $TAG it might exist continuing." 
+  cat $ERRORTMPDIR/stdout
+  cat $ERRORTMPDIR/stderr
+fi
+
+if ! git commit -am "$MESSAGE" 1>"$ERRORTMPDIR/stdout" 2>"$ERRORTMPDIR/stderr"; then
+  >&2 echo "ERROR failed to commit modification to versions" 
+  cat $ERRORTMPDIR/stdout
+  cat $ERRORTMPDIR/stderr
+  exit 12
+fi
+
+if ! git push origin "$BRANCH" 1>"$ERRORTMPDIR/stdout" 2>"$ERRORTMPDIR/stderr"; then
   >&2 echo "ERROR failed to git push origin $TAG"
+  cat $ERRORTMPDIR/stdout
+  cat $ERRORTMPDIR/stderr 
   exit 13
 fi
 
