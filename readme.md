@@ -1,6 +1,6 @@
 # OCD Botkit Chatbot
 
-This is Botkit Chatbot configured for Slack. Botkit runs against many chat solutions and the ocd logic is bash scripts. So it would be easy to send us a PR to have it support many other chat solutions. 
+This is Botkit Chatbot configured for Slack. Botkit runs against many chat solutions and the ocd logic is bash scripts. So if you want to use any other chat engine then please send us a PR. 
 
 ### Install with OCD
 
