@@ -157,7 +157,7 @@ module.exports = function(controller) {
 
             
         } else {
-            bot.replyInThread(message, 'Tell me to `deploy $APP version $TAG to $ENV`. I will then create a PR in the config repo for changing the container tag running in an environment. When you merge the PR OCD will do the deplouyment.')
+            bot.replyInThread(message, 'Tell me to `deploy $APP version $TAG to $ENV`. I will then create a PR in the config repo for changing the container tag running in an environment. When you merge the PR OCD will do the deployment.')
         }
     });
 
