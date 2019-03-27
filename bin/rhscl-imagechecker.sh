@@ -4,20 +4,20 @@ set -Eeuo pipefail
 oc() { 
     bin/oc_wrapper.sh $@
     if [[ "$?" != 0 ]]; then
-        #exit $?
+        >&2 echo "ERROR oc wrapper returned none zero status"
     fi
 }
 
 IMAGE_STREAM="$1"
 
 if [ -z "$IMAGE_STREAM" ]; then
-    >&2 echo "Please provide image stream as first parameter (e.g., php-71-rhel7)"
+    >&2 echo "ERROR Please provide image stream as first parameter (e.g., php-71-rhel7)"
     #exit 1
 fi
 
 
 if [ -z "$BUILD_PROJECT" ]; then
-    >&2 echo "Please provide BUILD_PROJECT as an environment variable (e.g., 'your-eng')"
+    >&2 echo "ERROR Please provide BUILD_PROJECT as an environment variable (e.g., 'your-eng')"
     #exit 2
 fi
 
@@ -60,7 +60,9 @@ done > /tmp/import.$$
 if [ -s /tmp/missing.$$ ]
 then
     echo "# The image stream $IMAGE_STREAM is missing one or more images marked as 'latest' upstream."
+    echo '```'
     cat /tmp/import.$$
+    echo '```'
 else
     UPSTREAM=$(cat /tmp/upstream.$$ | paste -sd "," -)
     echo "The image stream $IMAGE_STREAM is up to date with latest upstream tags $UPSTREAM"
