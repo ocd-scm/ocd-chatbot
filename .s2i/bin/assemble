@@ -7,3 +7,7 @@ $STI_SCRIPTS_PATH/assemble
 cd /tmp && wget -q -O - https://github.com/github/hub/releases/download/v2.7.0/hub-linux-amd64-2.7.0.tgz | \
     tar zxf - && \
     mv $(find . -name hub) $APP_ROOT
+
+cd /tmp && wget -q -O jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 -o jq && \
+    chmod +x jq && \
+    mv $(find . -name jq) $APP_ROOT
