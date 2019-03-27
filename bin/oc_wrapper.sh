@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # try assuming our previous login hasn't timed out
-/usr/local/bin/oc $@ 2>/dev/null
+$APP_ROOT/oc $@ 2>/dev/null
 
 # we it didn't work assume that our prevous login has timed out
 if [[ "$?" != "0" ]]; then
@@ -14,7 +14,7 @@ if [[ "$?" != "0" ]]; then
         exit 2
     fi
     # do login
-    /usr/local/bin/oc login ${OPENSHIFT_SERVER} -u ${OPENSHIFT_USER} -p ${OPENSHIFT_PASSWORD} > /dev/null
+    $APP_ROOT/oc login ${OPENSHIFT_SERVER} -u ${OPENSHIFT_USER} -p ${OPENSHIFT_PASSWORD} > /dev/null
 
     if [[ "$?" != "0" ]]; then
         (>&2 echo "ERROR Could not oc login. Exiting")
@@ -22,5 +22,5 @@ if [[ "$?" != "0" ]]; then
     fi
 
     #try again
-    /usr/local/bin/oc $@
+    $APP_ROOT/oc $@
 fi
