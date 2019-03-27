@@ -8,10 +8,6 @@ oc() {
     fi
 }
 
-jq() {
-    /opt/app-root/jq $@
-}
-
 IMAGE_STREAM="$1"
 
 if [ -z "$IMAGE_STREAM" ]; then
@@ -33,7 +29,7 @@ REDHAT_REGISTRY_URL="registry.access.redhat.com/rhscl/$IMAGE_STREAM"
 #echo IMAGE_STREAM=$IMAGE_STREAM
 
 # Step1: What do we actually have locally? 
-oc export is -o json -n $BUILD_PROJECT | jq -r '."items"[] | select(.metadata.name=="'$IMAGE_STREAM'") | .spec.tags[].name'  | grep -v latest > /tmp/local.$$
+oc export is -o json -n $BUILD_PROJECT | /opt/app-root/jq -r '."items"[] | select(.metadata.name=="'$IMAGE_STREAM'") | .spec.tags[].name'  | grep -v latest > /tmp/local.$$
 
 # ( echo "local tags are: " && cat /tmp/local.$$  ) || true
 
@@ -43,7 +39,7 @@ if [[ ! -s /tmp/local.$$ ]]; then
 fi
 
 # Step2: What are the tags that match the upstream “latest” version?
-wget -q  -O - $REDHAT_REGISTRY_API/tags/list | jq -r '."tags"[]' | while read TAG ; do echo $TAG ; wget --header="Accept: application/vnd.docker.distribution.manifest.v2+json" -q  -O - $REDHAT_REGISTRY_API/manifests/$TAG | jq '.config.digest // "null"' ; done | paste -d, - - | awk 'BEGIN{FS=OFS=","}{map[$1] = $2;rmap[$2][$1] = $1;}END{for (key in rmap[map["latest"]]) {print key}}' | grep -v latest > /tmp/upstream.$$
+wget -q  -O - $REDHAT_REGISTRY_API/tags/list | /opt/app-root/jq -r '."tags"[]' | while read TAG ; do echo $TAG ; wget --header="Accept: application/vnd.docker.distribution.manifest.v2+json" -q  -O - $REDHAT_REGISTRY_API/manifests/$TAG | /opt/app-root/jq '.config.digest // "null"' ; done | paste -d, - - | awk 'BEGIN{FS=OFS=","}{map[$1] = $2;rmap[$2][$1] = $1;}END{for (key in rmap[map["latest"]]) {print key}}' | grep -v latest > /tmp/upstream.$$
 
 # (echo "upstream tags are: " && cat /tmp/upstream.$$) || true
 
