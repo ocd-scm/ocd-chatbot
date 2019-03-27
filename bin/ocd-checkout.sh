@@ -83,19 +83,6 @@ hub() {
     $APP_ROOT/hub "$@" 
 }
 
-# TODO now that we use ssh can this be deleted
-if [[ ! -f ~/.config/hub ]]; then
-  mkdir -p ~/.config
-# https://github.com/github/hub/issues/978#issuecomment-131964409
-cat >~/.config/hub <<EOL
----
-github.com:
-- protocol: https
-  user: ${GITHUB_USER}
-  oauth_token: ${GITHUB_OAUTH_TOKEN}
-EOL
-fi
-
 # configure git push
 
 if ! git config --list | grep "ocd-slackbot@example.com" 1>/dev/null; then
