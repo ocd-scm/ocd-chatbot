@@ -3,6 +3,7 @@ const { spawn } = require('child_process');
 const HOME = "/opt/app-root/src";
 const OCD_RELEASE = HOME+'/bin/ocd-create-release.sh';
 const OCD_DEPLOY = HOME+'/bin/ocd-deploy-config.sh';
+const OCD_RHSCL = HOME+'/bin/rhscl-imagechecker.sh';
 
 module.exports = function(controller) {
 
@@ -159,6 +160,42 @@ module.exports = function(controller) {
         } else {
             bot.replyInThread(message, 'Tell me to `deploy $APP version $TAG to $ENV`. I will then create a PR in the config repo for changing the container tag running in an environment. When you merge the PR OCD will do the deployment.')
         }
+    });
+
+   controller.hears([
+            '^do we have the latest rhscl (.*) security patches?'],
+            'direct_message,direct_mention', function(bot, message) {
+        if (message.match[1]) {
+            const IMAGE = message.match[1];
+            var argsArray = [IMAGE];
+            const child = spawn(OCD_RHSCL, argsArray);
+            console.log(`${OCD_RHSCL}, IMAGE=${IMAGE};`);
+
+            bot.api.reactions.add({
+                timestamp: message.ts,
+                channel: message.channel,
+                name: 'thumbsup',
+            });
+
+            child.on('exit', function (code, signal) {
+                if( `${code}` !== "0" ) {
+                    var msg =  'Error child process exited with ' +
+                                `code ${code} and signal ${signal}`;
+                    console.log(msg);
+                    bot.replyInThread(message, msg);
+                }
+            });
+
+            child.stdout.on('data', (data) => {
+                console.log(`${data}`);
+                bot.replyInThread(message, `${data}`);
+            });
+
+            child.stderr.on('data', (data) => {
+                console.log(`${data}`);
+                bot.replyInThread(message, `${data}`);
+            });
+        } 
     });
 
 };
