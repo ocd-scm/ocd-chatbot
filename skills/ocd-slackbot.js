@@ -63,7 +63,7 @@ module.exports = function(controller) {
     }
 
     controller.hears([
-            '^help', '^--help', '^?'], 
+            '^help', '^--help'], 
             'direct_message,direct_mention', function(bot, message) {
         bot.replyInThread(message, 'Tell me to `create a release` or `deploy` for more help with commands.')
     });
