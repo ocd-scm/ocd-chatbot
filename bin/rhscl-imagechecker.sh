@@ -12,15 +12,11 @@ IMAGE_STREAM="$1"
 
 if [ -z "$IMAGE_STREAM" ]; then
     >&2 echo "ERROR Please provide image stream as first parameter (e.g., php-71-rhel7)"
-    #exit 1
 fi
-
 
 if [ -z "$BUILD_PROJECT" ]; then
     >&2 echo "ERROR Please provide BUILD_PROJECT as an environment variable (e.g., 'your-eng')"
-    #exit 2
 fi
-
 
 REDHAT_REGISTRY_API="https://registry.access.redhat.com/v2/rhscl/$IMAGE_STREAM"
 REDHAT_REGISTRY_URL="registry.access.redhat.com/rhscl/$IMAGE_STREAM"
@@ -34,8 +30,7 @@ oc export is -o json -n $BUILD_PROJECT | /opt/app-root/jq -r '."items"[] | selec
 # ( echo "local tags are: " && cat /tmp/local.$$  ) || true
 
 if [[ ! -s /tmp/local.$$ ]]; then
-     (>&2 echo "ERROR could not get the local tags using "oc export is -o json -n $BUILD_PROJECT"")
-    #exit 2
+     (>&2 echo "ERROR could not get the local tags using oc export is -o json -n $BUILD_PROJECT")
 fi
 
 # Step2: What are the tags that match the upstream “latest” version?
@@ -67,3 +62,5 @@ else
     UPSTREAM=$(cat /tmp/upstream.$$ | paste -sd "," -)
     echo "The image stream $IMAGE_STREAM is up to date with latest upstream tags $UPSTREAM"
 fi
+
+rm /tmp/local.$$ /tmp/upstream.$$ /tmp/missing.$$ /tmp/import.$$
