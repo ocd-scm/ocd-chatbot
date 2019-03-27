@@ -14,20 +14,31 @@ jq() {
 
 IMAGE_STREAM="$1"
 
+if [ -z "$IMAGE_STREAM" ]; then
+    >&2 echo "Please provide image stream as first parameter (e.g., php-71-rhel7)"
+    exit 1
+fi
+
+
+if [ -z "$BUILD_PROJECT" ]; then
+    >&2 echo "Please provide BUILD_PROJECT as an environment variable (e.g., 'your-eng')"
+    exit 2
+fi
+
+
 REDHAT_REGISTRY_API="https://registry.access.redhat.com/v2/rhscl/$IMAGE_STREAM"
 REDHAT_REGISTRY_URL="registry.access.redhat.com/rhscl/$IMAGE_STREAM"
-
 
 #echo REDHAT_REGISTRY_URL=$REDHAT_REGISTRY_URL
 #echo IMAGE_STREAM=$IMAGE_STREAM
 
 # Step1: What do we actually have locally? 
-oc export is -o json -n uniqkey-api-staging | jq -r '."items"[] | select(.metadata.name=="'$IMAGE_STREAM'") | .spec.tags[].name'  | grep -v latest > /tmp/local.$$
+oc export is -o json -n $BUILD_PROJECT | jq -r '."items"[] | select(.metadata.name=="'$IMAGE_STREAM'") | .spec.tags[].name'  | grep -v latest > /tmp/local.$$
 
 # ( echo "local tags are: " && cat /tmp/local.$$  ) || true
 
 if [[ ! -s /tmp/local.$$ ]]; then
-     (>&2 echo "ERROR could not get the local tags using "oc export is -o json -n uniqkey-api-staging"")
+     (>&2 echo "ERROR could not get the local tags using "oc export is -o json -n $BUILD_PROJECT"")
     exit 2
 fi
 
@@ -45,9 +56,9 @@ awk 'NR==FNR{a[$1];next} {delete a[$1] } END{for (key in a) print key }' /tmp/up
 cat /tmp/missing.$$ | \
 while read TAG; do \
     echo "# Run the following to import the missing image $TAG:"
-    echo "oc -n uniqkey-api-staging import-image $IMAGE_STREAM:$TAG --from='$REDHAT_REGISTRY_URL:$TAG' --confirm"
+    echo "oc -n $BUILD_PROJECT import-image $IMAGE_STREAM:$TAG --from='$REDHAT_REGISTRY_URL:$TAG' --confirm"
     echo "# Run the following set the imported image as the latest to trigger a build:"
-    echo "oc tag uniqkey-api-staging/$IMAGE_STREAM:$TAG uniqkey-api-staging/$IMAGE_STREAM:latest"
+    echo "oc tag $BUILD_PROJECT/$IMAGE_STREAM:$TAG $BUILD_PROJECT/$IMAGE_STREAM:latest"
 done > /tmp/import.$$
 
 if [ -s /tmp/missing.$$ ]
