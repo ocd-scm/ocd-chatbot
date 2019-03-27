@@ -47,17 +47,19 @@ awk 'NR==FNR{a[$1];next} {delete a[$1] } END{for (key in a) print key }' /tmp/up
 cat /tmp/missing.$$ | \
 while read TAG; do \
     echo "# Run the following to import the missing image $TAG:"
+    echo '```'
     echo "oc -n $BUILD_PROJECT import-image $IMAGE_STREAM:$TAG --from='$REDHAT_REGISTRY_URL:$TAG' --confirm"
+    echo '```'
     echo "# Run the following set the imported image as the latest to trigger a build:"
+    echo '```'
     echo "oc tag $BUILD_PROJECT/$IMAGE_STREAM:$TAG $BUILD_PROJECT/$IMAGE_STREAM:latest"
+    echo '```'
 done > /tmp/import.$$
 
 if [ -s /tmp/missing.$$ ]
 then
     echo "# The image stream $IMAGE_STREAM is missing one or more images marked as 'latest' upstream."
-    echo '```'
     cat /tmp/import.$$
-    echo '```'
 else
     UPSTREAM=$(cat /tmp/upstream.$$ | paste -sd "," -)
     echo "The image stream $IMAGE_STREAM is up to date with latest upstream tags $UPSTREAM"

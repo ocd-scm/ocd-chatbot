@@ -188,7 +188,7 @@ module.exports = function(controller) {
 
             child.stdout.on('data', (data) => {
                 console.log(`${data}`);
-                bot.replyInThread(message, `${data}`);
+                bot.replyPublic(message, `${data}`);
             });
 
             child.stderr.on('data', (data) => {
