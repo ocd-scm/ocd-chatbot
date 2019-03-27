@@ -4,7 +4,7 @@ set -Eeuo pipefail
 oc() { 
     bin/oc_wrapper.sh $@
     if [[ "$?" != 0 ]]; then
-        exit $?
+        #exit $?
     fi
 }
 
@@ -12,13 +12,13 @@ IMAGE_STREAM="$1"
 
 if [ -z "$IMAGE_STREAM" ]; then
     >&2 echo "Please provide image stream as first parameter (e.g., php-71-rhel7)"
-    exit 1
+    #exit 1
 fi
 
 
 if [ -z "$BUILD_PROJECT" ]; then
     >&2 echo "Please provide BUILD_PROJECT as an environment variable (e.g., 'your-eng')"
-    exit 2
+    #exit 2
 fi
 
 
@@ -35,7 +35,7 @@ oc export is -o json -n $BUILD_PROJECT | /opt/app-root/jq -r '."items"[] | selec
 
 if [[ ! -s /tmp/local.$$ ]]; then
      (>&2 echo "ERROR could not get the local tags using "oc export is -o json -n $BUILD_PROJECT"")
-    exit 2
+    #exit 2
 fi
 
 # Step2: What are the tags that match the upstream “latest” version?
