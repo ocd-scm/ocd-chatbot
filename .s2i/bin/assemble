@@ -16,3 +16,5 @@ cd /tmp && wget -q -O - https://mirror.openshift.com/pub/openshift-v3/clients/3.
     tar zx && \
     mv $(find . -name oc) $APP_ROOT
     
+ env
+ 
