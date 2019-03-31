@@ -1,6 +1,6 @@
 #!/bin/sh
 
-MESSAGE="Started build $OPENSHIFT_BUILD_NAME of git reference $OPENSHIFT_BUILD_REFERENCE"
+export MESSAGE="Started build $OPENSHIFT_BUILD_NAME of git reference $OPENSHIFT_BUILD_REFERENCE"
 
 if [ ! -z "$CHATBOT_NOTIFY" ]; then
     echo "$CHATBOT_NOTIFY" | base64 -d | /bin/bash
