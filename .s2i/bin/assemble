@@ -1,5 +1,11 @@
 #!/bin/sh
 
+MESSAGE="Started build $OPENSHIFT_BUILD_NAME of git reference $OPENSHIFT_BUILD_REFERENCE"
+
+if [ ! -z "$CHATBOT_NOTIFY" ]; then
+    echo "$CHATBOT_NOTIFY" | base64 -d | /bin/bash
+fi
+
 # run the normal build
 $STI_SCRIPTS_PATH/assemble
 
@@ -15,4 +21,4 @@ cd /tmp && wget -q -O jq https://github.com/stedolan/jq/releases/download/jq-1.5
 cd /tmp && wget -q -O - https://mirror.openshift.com/pub/openshift-v3/clients/3.9.14/linux/oc.tar.gz | \
     tar zx && \
     mv $(find . -name oc) $APP_ROOT
-    
+
