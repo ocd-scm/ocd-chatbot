@@ -21,4 +21,3 @@ cd /tmp && wget -q -O jq https://github.com/stedolan/jq/releases/download/jq-1.5
 cd /tmp && wget -q -O - https://mirror.openshift.com/pub/openshift-v3/clients/3.9.14/linux/oc.tar.gz | \
     tar zx && \
     mv $(find . -name oc) $APP_ROOT
-
