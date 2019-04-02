@@ -2,7 +2,7 @@
 
 This is Botkit Chatbot configured for Slack that is designed to make it easy for a team to drive OCD. 
 
-[![Watch the video](http://i.vimeocdn.com/video/753251594_640.jpg)](https://player.vimeo.com/video/312245185)
+[![Watch the video](http://i.vimeocdn.com/video/753251594_640.jpg)](https://vimeo.com/312245185)
 
 Botkit runs against many chat solutions and the ocd logic is bash scripts. So if you want to use any other chat engine then please send us a PR. This bot:
 
