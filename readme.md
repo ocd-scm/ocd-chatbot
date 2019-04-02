@@ -1,10 +1,24 @@
 # OCD Botkit Chatbot
 
-This is Botkit Chatbot configured for Slack. Botkit runs against many chat solutions and the ocd logic is bash scripts. So if you want to use any other chat engine then please send us a PR. 
+This is Botkit Chatbot configured for Slack that is designed to make it easy for a team to drive OCD. 
+
+[![Watch the video](http://i.vimeocdn.com/video/753251594_640.jpg)](https://player.vimeo.com/video/312245185)
+
+Botkit runs against many chat solutions and the ocd logic is bash scripts. So if you want to use any other chat engine then please send us a PR. This bot:
+
+ 1. Responds to `create a release` by telling you the syntax to create a GitHub release that will create a release tag. This will trigger OCD to create a container build of your application that will be given the same tag. 
+ 2. Responds to `deploy` by telling you the syntax to create a release PR of your config repo that sets the new version of the application to be the container tag that you want to release. When you merge the PR it will trigger OCD to deploy the tagged version of the application into environment. 
+ 3. Responds to `do we have the latest rhscl (.*) security patches?` by checking the tag marked latest of "registry.access.redhat.com/rhscl/$1" against the tags in your build environment. The idea here is that you can schedule the built-in system @slackbot to `/remind` the slack channel where OCD is with this question. For example we have setup `/remind #openshift “do we have the latest nodejs-8-rhel7 tags?” at 9AM every Monday.`
+
+ In addition to running a botkit slackbot for request-response style interactions you can also use the Slack Inbound Webhooks feature to have OCD scripts announce what they are doing. For example a big react application  
 
 ### Install with OCD
 
 There is a demo env repo over at https://github.com/ocd-scm/ocd-demo-env-chatbot with instructions at https://github.com/ocd-scm/ocd-meta/wiki/OpenShift-Online-Pro-(openshift-dot-com)#5-optional-setup-up-the-demo-chatbot
+
+There is a video of how to set up a Slack botkit using the slack api page: 
+
+[![Watch the video](http://i.vimeocdn.com/video/751817622_640.jpg)](https://vimeo.com/311086100)
 
 ### Adding new chat engines?
 
