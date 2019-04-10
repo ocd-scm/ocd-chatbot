@@ -25,3 +25,5 @@ MESSAGE=$(
     oc get dc | gawk 'match($NF, /config,image\((.*)\)/, m) {print m[1]}' | sort
     echo '\n```'
 )
+
+echo $MESSAGE
