@@ -22,8 +22,8 @@ fi
 MESSAGE=$(
     echo 'Environment uniqkey-live has been updated. Here are the running app versions:'
     echo '```'
-    oc get dc | gawk 'match($NF, /config,image\((.*)\)/, m) {print m[1]}' | sort
-    echo '\n```'
+    oc -n $ENVIRONMENT get dc | gawk 'match($NF, /config,image\((.*)\)/, m) {print m[1]}' | sort
+    echo '```'
 )
 
 echo $MESSAGE
