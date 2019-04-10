@@ -194,7 +194,7 @@ module.exports = function(controller) {
     });
 
    controller.hears([
-            '^what versions are deployed in (.*)?'],
+            '^what versions are deployed in (.*)\?'],
             'direct_message,direct_mention', function(bot, message) {
         if (message.match[1]) {
             const ENV = message.match[1];
