@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ENVIRONMENT=$3
+ENVIRONMENT=$1
 
 if [[ -z "$ENVIRONMENT" ]]; then
   >&2 echo "ERROR please define ENVIRONMENT"
