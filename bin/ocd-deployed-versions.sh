@@ -20,7 +20,7 @@ if ! oc project $ENVIRONMENT 1>/dev/null 2>/dev/null; then
 fi
 
 MESSAGE=$(
-    echo 'Environment uniqkey-live has been updated. Here are the running app versions:'
+    echo "Here are the deployed versions in $ENVIRONMENT:"
     echo '```'
     oc -n $ENVIRONMENT get dc | gawk 'match($NF, /config,image\((.*)\)/, m) {print m[1]}' | sort
     echo '```'
