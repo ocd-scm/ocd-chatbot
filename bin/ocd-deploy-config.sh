@@ -34,7 +34,7 @@ source $APP_ROOT/src/bin/ocd-checkout.sh
 ERRORTMPDIR=$(mktemp -d)
 trap "rm -rf $ERRORTMPDIR" EXIT
 
-MESSAGE="ocd-slackbot deploy $TAG"
+MESSAGE="ocd-slackbot deploy $APP version $TAG"
 
 if [ ! -f ./envvars ]; then
   >&2 echo "ERROR no envvars in $(pwd)" 
