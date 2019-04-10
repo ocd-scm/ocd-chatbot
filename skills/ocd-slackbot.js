@@ -4,6 +4,7 @@ const HOME = "/opt/app-root/src";
 const OCD_RELEASE = HOME+'/bin/ocd-create-release.sh';
 const OCD_DEPLOY = HOME+'/bin/ocd-deploy-config.sh';
 const OCD_RHSCL = HOME+'/bin/rhscl-imagechecker.sh';
+const OCD_DEPLOYED_VERSIONS = HOME+'/bin/ocd-deployed-versions.sh';
 
 module.exports = function(controller) {
 
@@ -164,6 +165,42 @@ module.exports = function(controller) {
             var argsArray = [IMAGE];
             const child = spawn(OCD_RHSCL, argsArray);
             console.log(`${OCD_RHSCL}, IMAGE=${IMAGE};`);
+
+            bot.api.reactions.add({
+                timestamp: message.ts,
+                channel: message.channel,
+                name: 'thumbsup',
+            });
+
+            child.on('exit', function (code, signal) {
+                if( `${code}` !== "0" ) {
+                    var msg =  'Error child process exited with ' +
+                                `code ${code} and signal ${signal}`;
+                    console.log(msg);
+                    bot.replyInThread(message, msg);
+                }
+            });
+
+            child.stdout.on('data', (data) => {
+                console.log(`${data}`);
+                bot.reply(message, `${data}`);
+            });
+
+            child.stderr.on('data', (data) => {
+                console.log(`${data}`);
+                bot.replyInThread(message, `${data}`);
+            });
+        } 
+    });
+
+   controller.hears([
+            '^what versions are deployed in (.*)?'],
+            'direct_message,direct_mention', function(bot, message) {
+        if (message.match[1]) {
+            const ENV = message.match[1];
+            var argsArray = [ENV];
+            const child = spawn(OCD_DEPLOYED_VERSIONS, argsArray);
+            console.log(`${OCD_DEPLOYED_VERSIONS}, ENV=${ENV};`);
 
             bot.api.reactions.add({
                 timestamp: message.ts,
