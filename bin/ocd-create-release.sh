@@ -42,6 +42,6 @@ KEY=$APP
 
 source $APP_ROOT/src/bin/ocd-checkout.sh
 
-if ! hub release create -m "ocd-slackbot release $TAG" --commitish=$SHA $TAG; then
-  >&2 echo "ERROR in folder $PWD could hub release create -m 'ocd-slackbot release $TAG'' --commitish=$SHA $TAG"
+if ! hub release create -m "$APP release $TAG" --commitish=$SHA $TAG; then
+  >&2 echo "ERROR in folder $PWD could hub release create -m '$APP release $TAG'' --commitish=$SHA $TAG"
 fi
