@@ -69,11 +69,11 @@ module.exports = function(controller) {
             '^create a release'], 
             'direct_message,direct_mention', function(bot, message) {
         if (message.match[1]) {
-            const APP = message.match[1];
-            const SHA = message.match[2];
+            const APP = message.match[1].trim();
+            const SHA = message.match[2].trim();
             var argsArray = [APP, SHA];
             if( message.match[3] ) {
-                const TAG = message.match[3];
+                const TAG = message.match[3].trim();
                 argsArray.push(TAG);
             }
             const child = spawn(OCD_RELEASE, argsArray);
@@ -116,9 +116,9 @@ module.exports = function(controller) {
             '^deploy'], 
             'direct_message,direct_mention', function(bot, message) {
         if (message.match[1]) {
-            const APP = message.match[1];
-            const TAG = message.match[2];
-            const ENVIRONMENT = message.match[3];
+            const APP = message.match[1].trim();
+            const TAG = message.match[2].trim();
+            const ENVIRONMENT = message.match[3].trim();
 
             var argsArray = [APP, TAG, ENVIRONMENT];
             const child = spawn(OCD_DEPLOY, argsArray);
@@ -161,7 +161,7 @@ module.exports = function(controller) {
             '^do we have the latest rhscl (.*) security patches?'],
             'direct_message,direct_mention', function(bot, message) {
         if (message.match[1]) {
-            const IMAGE = message.match[1];
+            const IMAGE = message.match[1].trim();
             var argsArray = [IMAGE];
             const child = spawn(OCD_RHSCL, argsArray);
             console.log(`${OCD_RHSCL}, IMAGE=${IMAGE};`);
@@ -197,7 +197,7 @@ module.exports = function(controller) {
             '^what versions are deployed in (.*).$'],
             'direct_message,direct_mention', function(bot, message) {
         if (message.match[1]) {
-            const ENV = message.match[1];
+            const ENV = message.match[1].trim();
             var argsArray = [ENV];
             const child = spawn(OCD_DEPLOYED_VERSIONS, argsArray);
             console.log(`${OCD_DEPLOYED_VERSIONS}, ENV=${ENV};`);
