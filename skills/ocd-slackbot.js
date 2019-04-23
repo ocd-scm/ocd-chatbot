@@ -159,7 +159,7 @@ module.exports = function(controller) {
 
    controller.hears([
             '^do we have the latest rhscl (.*) security patches?'],
-            'direct_message,direct_mention', function(bot, message) {
+            'ambient', function(bot, message) {
         if (message.match[1]) {
             const IMAGE = message.match[1].trim();
             var argsArray = [IMAGE];
